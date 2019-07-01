@@ -219,7 +219,7 @@ public class TimesheetController {
         return "redirect:/summary";
     }
 
-
+    // Should use DeleteMapping instead of getmapping
     @GetMapping("/delete/{dayId}")
     public String deleteDay(@PathVariable long dayId, Principal p){
         Day currentDay = dayRepository.findById(dayId).get();

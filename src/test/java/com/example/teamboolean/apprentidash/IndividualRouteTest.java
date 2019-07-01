@@ -116,7 +116,7 @@ public class IndividualRouteTest {
     public void test_delete() throws Exception {
         this.mockMvc.perform(get("/delete/{dayId}", 7)
                 .with(testUser()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk()); //if using deletemapping, status to be checked should be is3xxRedirection
 
     }
 
