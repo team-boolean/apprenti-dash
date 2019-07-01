@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -164,6 +163,8 @@ public class TimesheetController {
         }
     }
 
+    //TODO: Add ability to edit date. Currently, if a user forgets to clock out on Friday and clocks in on Monday
+    // there is no way to fix the date. User will always be clocked out on Monday.
     @PostMapping("/edit")
     public String postEdit(long dayId,String clockIn, String clockOut, String lunchStart, String lunchEnd){
         Day currentDay = dayRepository.findById(dayId).get();
@@ -265,7 +266,7 @@ public class TimesheetController {
 
         for(Day curDay: dateRange){
 
-            csvWriter.println(curDay.toString());
+            csvWriter.println(curDay.printCsvDayFormatHelper());
         }
 
         csvWriter.println(",,,,Total Hours:," + totalHours);

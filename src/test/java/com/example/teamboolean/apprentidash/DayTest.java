@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -147,7 +146,7 @@ public class DayTest {
         assertEquals("this should give back lunch start time", lunchStart, test.lunchStart);
     }
 
-    //test toString
+    //test printCsvDayFormatHelper
     @Test
     public void testDayToString(){
         LocalDateTime startHour = LocalDate.now().atTime(9, 0);
@@ -161,7 +160,7 @@ public class DayTest {
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
 
         String result = "Thursday,06-27-2019,09:00,18:30,1.0,8.5";
-        assertEquals("this should give string with day format", result, test.toString());
+        assertEquals("this should give string with day format", result, test.printCsvDayFormatHelper());
     }
 
     //If there is more time, we would like to test edge cases such as null values, one value-missing, etc
