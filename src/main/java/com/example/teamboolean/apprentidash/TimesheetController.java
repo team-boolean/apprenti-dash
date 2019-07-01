@@ -219,8 +219,8 @@ public class TimesheetController {
         return "redirect:/summary";
     }
 
-
-    @GetMapping("/delete/{dayId}")
+    //DeleteMapping to clear Id for day in DB
+    @DeleteMapping("/delete/{dayId}")
     public String deleteDay(@PathVariable long dayId, Principal p){
         Day currentDay = dayRepository.findById(dayId).get();
         AppUser currentUser = userRepository.findByUsername(p.getName());
