@@ -49,7 +49,7 @@ public class IndividualRouteTest {
                 .build();
     }
 
-
+        //https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/test-mockmvc.html
     public static RequestPostProcessor testUser(){
         return user("test").password("test");
     }
@@ -114,9 +114,10 @@ public class IndividualRouteTest {
     @WithMockUser
     @Test
     public void test_delete() throws Exception {
-        this.mockMvc.perform(get("/delete/{dayId}", 7)
-                .with(testUser()))
-                .andExpect(status().isOk());
+                            //should be a delete and not a get
+        this.mockMvc.perform(delete("/delete/{dayId}", 7)
+                .with(testUser()))      //Checking for a redirection code once deleted
+                .andExpect(status().is3xxRedirection());
 
     }
 
