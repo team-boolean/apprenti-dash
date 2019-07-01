@@ -2,6 +2,7 @@ package com.example.teamboolean.apprentidash;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,23 +65,24 @@ public class ApprentiDashController {
 
     //Sign-up page
     @GetMapping("/signup")
-    public String startSignUp(Model m, Principal p){
+    public String startSignUp(@RequestParam (required = false, defaultValue = "")String error,Model m, Principal p){
         //Sets the necessary variables for the nav bar
         timesheetController.loggedInStatusHelper(m, p);
         m.addAttribute("currentPage", "signup");
+        m.addAttribute("error",error);
         return "signup";
     }
 
     @PostMapping("/signup")
     public String addUser(String username, String password, String firstName, String lastName, String managerName){
-        if (!checkUserName(username)) {
+        try {
             AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName);
             userRepository.save(newUser);
             Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return "redirect:/";
-        }else {
-            return "duplicateUsername";
+        } catch(DataIntegrityViolationException e){
+            return "redirect:/signup?error=uniqueUserName";
         }
     }
 
@@ -88,19 +90,19 @@ public class ApprentiDashController {
 
 
     //help function to check if the username exist in database
-    public boolean checkUserName(String username){
-        Iterable<AppUser> allUsers =  userRepository.findAll();
-        List<String> allUsername = new ArrayList<>();
-
-        for(AppUser appUser : allUsers){
-            allUsername.add(appUser.username);
-        }
-
-        if(allUsername.contains(username)){
-            return true;
-        }else{
-            return false;
-        }
-    }
+//    public boolean checkUserName(String username){
+//        Iterable<AppUser> allUsers =  userRepository.findAll();
+//        List<String> allUsername = new ArrayList<>();
+//
+//        for(AppUser appUser : allUsers){
+//            allUsername.add(appUser.username);
+//        }
+//
+//        if(allUsername.contains(username)){
+//            return true;
+//        }else{
+//            return false;
+//        }
+//    }
 
 }
