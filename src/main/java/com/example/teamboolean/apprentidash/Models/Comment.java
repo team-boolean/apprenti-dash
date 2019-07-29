@@ -10,19 +10,19 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    long id;
 
     @ManyToOne
-    private AppUser author;
+    AppUser author;
 
     @ManyToOne
-    private Discussion parentDiscussion;
+    Discussion parentDiscussion;
 
     @DateTimeFormat(pattern="yyyy-mm-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    LocalDateTime createdAt;
 
-    private int thumbsUp;
-    private String body;
+    int thumbsUp;
+    String body;
 
     public Comment() {}
 

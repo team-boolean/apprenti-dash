@@ -14,20 +14,20 @@ public class Discussion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    long id;
 
     @ManyToOne
-    private AppUser author;
+    AppUser author;
 
     @OneToMany (mappedBy = "parentDiscussion")
-    private List<Comment> comments;
+    List<Comment> comments;
 
     @DateTimeFormat(pattern="yyyy-mm-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    LocalDateTime createdAt;
 
-    private String title;
-    private String body;
-    private int thumbsUp;
+    String title;
+    String body;
+    int thumbsUp;
 
     public Discussion() {}
 

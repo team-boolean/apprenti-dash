@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class ForumController {
@@ -35,20 +36,28 @@ public class ForumController {
         m.addAttribute("isLoggedIn",true);
         m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
         m.addAttribute("currentPage", "forum");
+
+        Iterable<Discussion> allDiscussions = discussionRepository.findAll();
+        m.addAttribute("allDiscussions", allDiscussions);
         return "forum";
     }
 
     //Single Thread Page
     @GetMapping("/forum/{id}")
-    public String getThread(@PathVariable String id, Model m, Principal p){
+    public String getThread(@PathVariable long id, Model m, Principal p){
         //Sets the necessary variables for the nav bar
         // add ID Get of Thread form ThreadRepository
         m.addAttribute("isLoggedIn",true);
         m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
         m.addAttribute("currentPage", "discussion");
+
+        Discussion discussion = discussionRepository.findById(id);
+        Iterable<Comment> allComments = discussion.getComments();
+
+        m.addAttribute("discussion", discussion);
+        m.addAttribute("allComments", allComments);
         return "discussion";
     }
-
 
     //POST Mapping to create new Discussion
     @PostMapping("/forum")
@@ -56,7 +65,6 @@ public class ForumController {
         AppUser author = appUserRepository.findByUsername(p.getName());
         Discussion newDiscussion = new Discussion(author, title, body);
         discussionRepository.save(newDiscussion);
-
         return new RedirectView("/forum/" + newDiscussion.getId());
     }
 
