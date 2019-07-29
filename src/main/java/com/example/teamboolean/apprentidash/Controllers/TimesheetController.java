@@ -1,10 +1,13 @@
-package com.example.teamboolean.apprentidash;
+package com.example.teamboolean.apprentidash.Controllers;
 
+import com.example.teamboolean.apprentidash.Models.AppUser;
+import com.example.teamboolean.apprentidash.Models.Day;
+import com.example.teamboolean.apprentidash.Repos.AppUserRepository;
+import com.example.teamboolean.apprentidash.Repos.DayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +33,7 @@ public class TimesheetController {
     private double totalHours;
 
     @Autowired
-    UserRepository userRepository;
+    AppUserRepository appUserRepository;
 
     @Autowired
     DayRepository dayRepository;
@@ -44,7 +47,7 @@ public class TimesheetController {
         m.addAttribute("currentPage", "clock_in");
         //Sets status for knowing which button to show
         LocalDateTime now = LocalDateTime.now(USZONE);
-        AppUser currentUser = userRepository.findByUsername(p.getName());
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
         m.addAttribute("workStatus", buttonRenderHelper(currentUser));
         m.addAttribute("todayDate", now);
         return "recordHour";
@@ -54,7 +57,7 @@ public class TimesheetController {
     @PostMapping(value="/recordHour", params="name=value")
     public String clockInSave(Principal p, Model m) {
 
-        AppUser currentUser = userRepository.findByUsername(p.getName());
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
         LocalDateTime now = LocalDateTime.now(USZONE);
 
         //check what day instance variable needs to be updated based on the sequence of clockin-lunchin-lunchout-clockout
@@ -79,9 +82,9 @@ public class TimesheetController {
     //route to handle when a user wants to add an additional day to their record
     @GetMapping ("/additionalDayRecord")
     public RedirectView makeDay(Principal p){
-        AppUser currentUser = userRepository.findByUsername(p.getName());
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
         currentUser.setCurrentday(null);
-        userRepository.save(currentUser);
+        appUserRepository.save(currentUser);
         return new RedirectView("/recordHour");
     }
 
@@ -96,13 +99,13 @@ public class TimesheetController {
         m.addAttribute("currentPage", "summary");
 
         //Retrieve info of logged in user
-        AppUser currentUser = userRepository.findByUsername(p.getName());
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
 
         //Add to the model for display
         m.addAttribute("user", currentUser);
 
         //Get associated days of the user
-        List<Day> userDays = currentUser.days;
+        List<Day> userDays = currentUser.getDays();
 
         //initialize list
         dateRange = new ArrayList<>();
@@ -126,7 +129,7 @@ public class TimesheetController {
         // retrieves the days based from date range and compute the
         // total working hours
         for (Day curDay: userDays){
-            LocalDate local = curDay.clockIn.toLocalDate();
+            LocalDate local = curDay.getClockIn().toLocalDate();
 
             if (local.compareTo(from) >= 0 && local.compareTo(to)<= 0){
                 dateRange.add(curDay);
@@ -154,9 +157,9 @@ public class TimesheetController {
         m.addAttribute("currentPage", "clock_in");
 
         Day currentDay = dayRepository.findById(dayId).get();
-        AppUser currentUser = userRepository.findByUsername(p.getName());
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
         //check if the day the user is trying to modify belongs to the user
-        if(!currentUser.days.contains(currentDay))
+        if(!currentUser.getDays().contains(currentDay))
             return "error";
         else{
             m.addAttribute("currentDay", currentDay);
@@ -223,17 +226,17 @@ public class TimesheetController {
     @GetMapping("/delete/{dayId}")
     public String deleteDay(@PathVariable long dayId, Principal p){
         Day currentDay = dayRepository.findById(dayId).get();
-        AppUser currentUser = userRepository.findByUsername(p.getName());
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
 
         //check if the day the user wants to delete belongs to the user
-        if(!currentUser.days.contains(currentDay))
+        if(!currentUser.getDays().contains(currentDay))
             return "error";
         else{
             //check if the day the user wants to delete is a day the user has clocked in but not clocked out for
             if(currentUser.getCurrentday() == currentDay){
                 //reallocate the users currentday instance reference to null, before deleting the day
                 currentUser.setCurrentday(null);
-                userRepository.save(currentUser);
+                appUserRepository.save(currentUser);
                 dayRepository.delete(currentDay);
             }else{
                 dayRepository.delete(currentDay);
@@ -297,7 +300,7 @@ public class TimesheetController {
 
 
     //Checks if the user is logged in and sets the model attributes accordingly per the navbar requirements
-    protected void loggedInStatusHelper(Model m, Principal p){
+    public void loggedInStatusHelper(Model m, Principal p){
 
         //Navbar required variables for knowing if user is logged in and their name for display
         boolean isLoggedIn;
@@ -309,7 +312,7 @@ public class TimesheetController {
             currentUserFirstName = "Visitor";
         }else {
             isLoggedIn = true;
-            currentUserFirstName = userRepository.findByUsername(p.getName()).getFirstName();
+            currentUserFirstName = appUserRepository.findByUsername(p.getName()).getFirstName();
         }
 
         //add the attributes to the passed in model
@@ -339,7 +342,7 @@ public class TimesheetController {
 
             @Override
             public int compare(Day o1, Day o2) {
-                return o1.clockIn.compareTo(o2.clockIn);
+                return o1.getClockIn().compareTo(o2.getClockIn());
             }
         });
     }
