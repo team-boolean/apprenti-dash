@@ -83,7 +83,7 @@ public class ApprentiDashController {
         return "appusersettings";
     }
 
-    //AppUserSettings Page
+    //Forum Page
     @GetMapping("/forum")
     public String getForum(Model m, Principal p){
         //Sets the necessary variables for the nav bar
@@ -92,7 +92,7 @@ public class ApprentiDashController {
         return "forum";
     }
 
-    //AppUserSettings Page
+    //Single Thread Page
     @GetMapping("/thread/{id}")
     public String getThread(@PathVariable String id, Model m, Principal p){
         //Sets the necessary variables for the nav bar

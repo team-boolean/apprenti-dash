@@ -1,6 +1,7 @@
 
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="navbar(userFirstName, isLoggedIn, currentPage)" class="navbar">
+    <h1><a th:href="@{'/'}">Apprenti Dashboard</a></h1>
     <h3>Welcome, <span th:text="${userFirstName}"></span>!</h3>
 <!-- Displays Log in or log out depending on logged in status-->
     <a class="logout_in" th:if="${isLoggedIn == true && currentPage != 'home'}" th:href="@{'/logout'}">Logout</a>
