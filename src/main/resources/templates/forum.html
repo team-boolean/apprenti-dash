@@ -10,10 +10,18 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"rel="stylesheet" type="text/css" />
 </head>
 <body>
-
-<header>
-    <div th:replace="fragments/navbar :: navbar(${userFirstName}, ${isLoggedIn}, ${currentPage})"></div>
-</header>
+    <header>
+        <div th:replace="fragments/navbar :: navbar(${userFirstName}, ${isLoggedIn}, ${currentPage})"></div>
+    </header>
+    <main>
+        <ul th:each="discussion : ${allDiscussions}">
+            <li>
+                <span><a th:href="'/forum/' + ${discussion.id}"><h1 th:text="${discussion.title}"></h1></a>
+                <p>Created at: <span th:text="${#temporals.format(discussion.createdAt, 'MM-dd-yyyy') + ' ' + #temporals.format(discussion.createdAt, 'HH:mm')}"></span></p>
+                </span>
+            </li>
+        </ul>
+    </main>
 
 </body>
 </html>
