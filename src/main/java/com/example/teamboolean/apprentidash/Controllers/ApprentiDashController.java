@@ -85,28 +85,6 @@ public class ApprentiDashController {
         return "appusersettings";
     }
 
-    //Forum Page
-    @GetMapping("/forum")
-    public String getForum(Model m, Principal p){
-        //Sets the necessary variables for the nav bar
-        m.addAttribute("isLoggedIn",true);
-        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
-        m.addAttribute("currentPage", "forum");
-        return "forum";
-    }
-
-    //Single Thread Page
-    @GetMapping("/forum/{id}")
-    public String getThread(@PathVariable String id, Model m, Principal p){
-        //Sets the necessary variables for the nav bar
-        // add ID Get of Thread form ThreadRepository
-        m.addAttribute("isLoggedIn",true);
-        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
-        m.addAttribute("currentPage", "discussion");
-        return "discussion";
-    }
-
-
     @PostMapping("/signup")
     public String addUser(String username, String password, String firstName, String lastName, String managerName, String email){
         if (!checkUserName(username)) {

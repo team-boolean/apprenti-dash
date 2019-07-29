@@ -8,6 +8,8 @@ import com.example.teamboolean.apprentidash.Repos.CommentRepository;
 import com.example.teamboolean.apprentidash.Repos.DiscussionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
@@ -25,6 +27,28 @@ public class ForumController {
 
     @Autowired
     DiscussionRepository discussionRepository;
+
+    //Forum Page
+    @GetMapping("/forum")
+    public String getForum(Model m, Principal p){
+        //Sets the necessary variables for the nav bar
+        m.addAttribute("isLoggedIn",true);
+        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
+        m.addAttribute("currentPage", "forum");
+        return "forum";
+    }
+
+    //Single Thread Page
+    @GetMapping("/forum/{id}")
+    public String getThread(@PathVariable String id, Model m, Principal p){
+        //Sets the necessary variables for the nav bar
+        // add ID Get of Thread form ThreadRepository
+        m.addAttribute("isLoggedIn",true);
+        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
+        m.addAttribute("currentPage", "discussion");
+        return "discussion";
+    }
+
 
     //POST Mapping to create new Discussion
     @PostMapping("/forum")
