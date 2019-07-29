@@ -75,9 +75,9 @@ public class ApprentiDashController {
     }
 
     @PostMapping("/signup")
-    public String addUser(String username, String password, String firstName, String lastName, String managerName){
+    public String addUser(String username, String password, String firstName, String lastName, String managerName, String email){
         if (!checkUserName(username)) {
-            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName);
+            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName, email);
             appUserRepository.save(newUser);
             Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);
