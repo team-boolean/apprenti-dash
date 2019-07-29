@@ -1,7 +1,7 @@
 
-/* Nav Bar */
+/* Nav Bar
 .navbar {
-  /* Photo by Murray Campbell on Unsplash https://unsplash.com/photos/B_TdfGFuGwA */
+ /* Photo by Murray Campbell on Unsplash https://unsplash.com/photos/B_TdfGFuGwA
   background-image: url("/images/navbar_background_darker.jpg");
   font-size: 20px;
   color: #fafafa;
@@ -18,7 +18,7 @@
 }
 
 /* TODO: Combine logout_in styling with navbar lis. 
-  Only difference right now is that logout_in needs 50px margin right. */
+  Only difference right now is that logout_in needs 50px margin right.
 .logout_in {
   margin-right: 50px;
   padding: 5px;
@@ -61,6 +61,23 @@
   text-decoration: none;
   color: inherit;
 }
+
+*/
+
+
+.welcome {
+   color: #fafafa;
+   padding-right: 25%;
+}
+
+
+.title {
+    display: inline;
+    text-align: center;
+}
+
+
+------------
 
 /* Home Page */
 .home_title {
