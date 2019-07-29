@@ -1,7 +1,6 @@
-package com.example.teamboolean.apprentidash;
+package com.example.teamboolean.apprentidash.Models;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import com.example.teamboolean.apprentidash.Models.AppUser;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -9,8 +8,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 @Entity
 public class Day {

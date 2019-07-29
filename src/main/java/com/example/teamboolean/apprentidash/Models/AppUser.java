@@ -1,4 +1,4 @@
-package com.example.teamboolean.apprentidash;
+package com.example.teamboolean.apprentidash.Models;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,10 +1,11 @@
 package com.example.teamboolean.apprentidash;
 
+import com.example.teamboolean.apprentidash.Models.AppUser;
+import com.example.teamboolean.apprentidash.Models.Day;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -46,10 +47,10 @@ public class DayTest {
     @Test
     public void testDayNull(){
         Day test = new Day();
-        assertNull("this should be null", test.clockIn);
-        assertNull("this should be null", test.clockOut);
-        assertNull("this should be null", test.lunchStart);
-        assertNull("this should be null", test.lunchEnd);
+        assertNull("this should be null", test.getClockIn());
+        assertNull("this should be null", test.getClockOut());
+        assertNull("this should be null", test.getLunchStart());
+        assertNull("this should be null", test.getLunchEnd());
     }
 
     // Testing instance of a new day
@@ -65,10 +66,10 @@ public class DayTest {
                 "mngr");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
-        assertEquals("this should give back start time", startHour, test.clockIn);
-        assertEquals("this should give back end time", endHour, test.clockOut);
-        assertEquals("this should give back lunch end time", lunchEnd, test.lunchEnd);
-        assertEquals("this should give back lunch start time", lunchStart, test.lunchStart);
+        assertEquals("this should give back start time", startHour, test.getClockIn());
+        assertEquals("this should give back end time", endHour, test.getClockOut());
+        assertEquals("this should give back lunch end time", lunchEnd, test.getLunchEnd());
+        assertEquals("this should give back lunch start time", lunchStart, test.getLunchStart());
     }
 
     // Test for the lunch calculation method
@@ -141,10 +142,10 @@ public class DayTest {
         test.setLunchEnd(lunchEnd);
         test.setLunchStart(lunchStart);
 
-        assertEquals("this should give back start time", startHour, test.clockIn);
-        assertEquals("this should give back end time", endHour, test.clockOut);
-        assertEquals("this should give back lunch end time", lunchEnd, test.lunchEnd);
-        assertEquals("this should give back lunch start time", lunchStart, test.lunchStart);
+        assertEquals("this should give back start time", startHour, test.getClockIn());
+        assertEquals("this should give back end time", endHour, test.getClockOut());
+        assertEquals("this should give back lunch end time", lunchEnd, test.getLunchEnd());
+        assertEquals("this should give back lunch start time", lunchStart, test.getLunchStart());
     }
 
     //test toString

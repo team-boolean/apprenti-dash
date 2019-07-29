@@ -1,6 +1,9 @@
-package com.example.teamboolean.apprentidash;
+package com.example.teamboolean.apprentidash.Controllers;
 
 
+import com.example.teamboolean.apprentidash.Models.AppUser;
+import com.example.teamboolean.apprentidash.Repos.DayRepository;
+import com.example.teamboolean.apprentidash.Repos.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,7 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-import java.time.*;
+
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +23,7 @@ import java.util.List;
 public class ApprentiDashController {
 
     @Autowired
-    UserRepository userRepository;
+    AppUserRepository appUserRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -75,7 +78,7 @@ public class ApprentiDashController {
     public String addUser(String username, String password, String firstName, String lastName, String managerName){
         if (!checkUserName(username)) {
             AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName);
-            userRepository.save(newUser);
+            appUserRepository.save(newUser);
             Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return "redirect:/";
@@ -89,11 +92,11 @@ public class ApprentiDashController {
 
     //help function to check if the username exist in database
     public boolean checkUserName(String username){
-        Iterable<AppUser> allUsers =  userRepository.findAll();
+        Iterable<AppUser> allUsers =  appUserRepository.findAll();
         List<String> allUsername = new ArrayList<>();
 
         for(AppUser appUser : allUsers){
-            allUsername.add(appUser.username);
+            allUsername.add(appUser.getUsername());
         }
 
         if(allUsername.contains(username)){

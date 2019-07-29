@@ -1,10 +1,7 @@
-package com.example.teamboolean.apprentidash;
+package com.example.teamboolean.apprentidash.Repos;
 
+import com.example.teamboolean.apprentidash.Models.Day;
 import org.springframework.data.repository.CrudRepository;
-
-import java.time.LocalDate;
-
-import java.util.List;
 
 public interface DayRepository extends CrudRepository <Day, Long> {
 
