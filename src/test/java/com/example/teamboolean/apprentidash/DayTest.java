@@ -20,7 +20,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 0);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
 
@@ -36,7 +36,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 10);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
 
@@ -63,7 +63,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 10);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
         assertEquals("this should give back start time", startHour, test.getClockIn());
@@ -82,7 +82,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 10);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
         assertEquals("this should give back lunch start time", 1.0, test.calculateLunch(),0.01);
@@ -98,7 +98,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 42);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
         assertEquals("this should give back lunch start time", 1.53, test.calculateLunch(),0.01);
@@ -114,7 +114,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 10);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
         assertEquals("this should give back start time", startHour, test.getClockIn());
@@ -135,7 +135,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 10);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         test.setClockOut(endHour);
         test.setClockIn(startHour);
@@ -157,7 +157,7 @@ public class DayTest {
         LocalDateTime lunchEnd = LocalDate.now().atTime(13, 10);
 
         AppUser userTest = new AppUser("myusername", "mypassword", "joe", "sands",
-                "mngr");
+                "mngr","123@email.test");
 
         Day test = new Day(startHour, endHour, lunchStart, lunchEnd, userTest);
 
