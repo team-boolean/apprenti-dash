@@ -41,6 +41,8 @@ public class ApprentiDashController {
         // otherwise, direct them to home page
         // Huge thanks to David for the idea!
         if(p != null){
+//            timesheetController.loggedInStatusHelper(m, p);
+            m.addAttribute("currentPage", "home");
             return new RedirectView("/recordHour");
         } else {
             return new RedirectView("/home");

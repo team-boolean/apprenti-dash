@@ -15,6 +15,10 @@
         <li th:if="${currentPage != 'home' && currentPage != 'clock_in' && currentPage != 'signup'}"><a
                 th:href="@{'/recordHour'}">
             Clock In Page</a></li>
+
+        <li th:if="${currentPage != 'clock_in' && currentPage != 'signup'}"><a
+                th:href="@{'/forum'}">
+            Forum</a></li>
     </ul>
 
 </div>
