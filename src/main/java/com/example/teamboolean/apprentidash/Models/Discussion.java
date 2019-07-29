@@ -19,7 +19,7 @@ public class Discussion {
     @ManyToOne
     private AppUser author;
 
-    @OneToMany (mappedBy = "parentThread")
+    @OneToMany (mappedBy = "parentDiscussion")
     private List<Comment> comments;
 
     @DateTimeFormat(pattern="yyyy-mm-dd HH:mm:ss")
