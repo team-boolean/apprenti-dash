@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Timesheet Summary</title>
+    <link rel="stylesheet" type="text/css" href="reset.css">
+    <link rel="stylesheet" type="text/css" href="base.css">
+    <link rel="stylesheet" type="text/css" href="layout.css">
+    <link rel="stylesheet" type="text/css" href="modules.css">
+</head>
+<body>
+    <header>
+        <div th:replace="fragments/navbar :: navbar(${userFirstName}, ${isLoggedIn}, ${currentPage})"></div>
+    </header>
+    <div class="main_content">
+        <h2 class="summary_h2">Summary</h2>
+        <div>
+            <p>Username: <span th:text="${user.username}"></span></p>
+            <p>Name: <span th:text="${user.lastName}"></span>,
+                <span th:text="${user.firstName}"></span>
+            </p>
+            <p>Manager: <span th:text="${user.managerName}"></span></p>
+
+</div>
+<div>
+    <form action="/summary">
+        From Date:
+        <input type="date" name="fromDate" th:value="${#temporals.format(fromDate, 'yyyy-MM-dd')}" required>
+        To Date:
+        <input type="date" name="toDate" th:value="${#temporals.format(toDate, 'yyyy-MM-dd')}" required>
+        <input type="submit">
+    </form>
+</div>
+
+        <table class="tableTimesheet">
+            <thead>
+            <tr>
+                <th>Day</th>
+                <th>Date</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Lunch</th>
+                <th>Daily Worked Hours</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="day : ${days}">
+                <td th:text="${#temporals.dayOfWeekName(day.clockIn)}"></td>
+                <td th:text="${#temporals.format(day.clockIn, 'MM-dd-yyyy')}"></td>
+                <td th:text="${#temporals.format(day.clockIn, 'HH:mm')}"></td>
+                <td th:text="${#temporals.format(day.clockOut, 'HH:mm')}"></td>
+                <td th:text="${#numbers.formatDecimal(day.calculateLunch(), 1, 2)}"></td>
+                <td th:text="${#numbers.formatDecimal(day.calculateDailyHours(), 1, 2)}"></td>
+                <td><a th:href="'/edit/' + ${day.getId()}"><span>Edit</span></a></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <h4 class="total_hours">Total Hours: <span th:text="${#numbers.formatDecimal(totalHours, 1, 2)}"></span></h4>
+    </div>
+    <form class="clock_in_form" th:if="${not #lists.isEmpty(days)}" th:action="@{/timesheet}"  method="GET">
+            <button type="submit" name="" value="value">Download Timesheet</button>
+    </form>
+</body>
+</html>

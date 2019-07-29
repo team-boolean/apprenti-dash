@@ -1,5 +1,6 @@
 package com.example.teamboolean.apprentidash;
 
+import com.example.teamboolean.apprentidash.Models.AppUser;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,11 +12,11 @@ public class AppUserTest {
     @Test
     public void appUserNull(){
         AppUser test = new AppUser();
-        assertNull("this should be null", test.username);
-        assertNull("this should be null", test.password);
-        assertNull("this should be null", test.firstName);
-        assertNull("this should be null", test.lastName);
-        assertNull("this should be null", test.managerName);
+        assertNull("this should be null", test.getUsername());
+        assertNull("this should be null", test.getPassword());
+        assertNull("this should be null", test.getFirstName());
+        assertNull("this should be null", test.getLastName());
+        assertNull("this should be null", test.getManagerName());
     }
 
 
