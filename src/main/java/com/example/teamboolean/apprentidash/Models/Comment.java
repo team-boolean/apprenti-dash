@@ -4,7 +4,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 public class Comment {
@@ -17,7 +16,7 @@ public class Comment {
     private AppUser author;
 
     @ManyToOne
-    private Thread parentThread;
+    private Discussion parentDiscussion;
 
     @DateTimeFormat(pattern="yyyy-mm-dd HH:mm:ss")
     private LocalDateTime createdAt;
@@ -27,9 +26,9 @@ public class Comment {
 
     public Comment() {}
 
-    public Comment(AppUser author, Thread parentThread, String body) {
+    public Comment(AppUser author, Discussion parentDiscussion, String body) {
         this.author = author;
-        this.parentThread = parentThread;
+        this.parentDiscussion = parentDiscussion;
         this.body = body;
         this.createdAt = LocalDateTime.now();
         this.thumbsUp = 0;
@@ -51,12 +50,12 @@ public class Comment {
         this.author = author;
     }
 
-    public Thread getParentThread() {
-        return parentThread;
+    public Discussion getParentDiscussion() {
+        return parentDiscussion;
     }
 
-    public void setParentThread(Thread parentThread) {
-        this.parentThread = parentThread;
+    public void setParentDiscussion(Discussion parentDiscussion) {
+        this.parentDiscussion = parentDiscussion;
     }
 
     public LocalDateTime getCreatedAt() {

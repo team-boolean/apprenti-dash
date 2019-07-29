@@ -29,7 +29,7 @@ public class AppUser implements UserDetails {
     Day Currentday;
 
     @OneToMany (mappedBy = "author")
-    List<Thread> threads;
+    List<Discussion> discussions;
 
     @OneToMany (mappedBy = "author")
     List<Comment> comments;
