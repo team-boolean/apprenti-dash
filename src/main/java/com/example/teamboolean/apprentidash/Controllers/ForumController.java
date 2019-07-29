@@ -39,7 +39,6 @@ public class ForumController {
 
         Iterable<Discussion> allDiscussions = discussionRepository.findAll();
         m.addAttribute("allDiscussions", allDiscussions);
-
         return "forum";
     }
 
@@ -57,8 +56,6 @@ public class ForumController {
 
         m.addAttribute("discussion", discussion);
         m.addAttribute("allComments", allComments);
-
-
         return "discussion";
     }
 

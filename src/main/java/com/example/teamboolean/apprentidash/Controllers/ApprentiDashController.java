@@ -85,9 +85,6 @@ public class ApprentiDashController {
         return "appusersettings";
     }
 
-
-
-
     @PostMapping("/signup")
     public String addUser(String username, String password, String firstName, String lastName, String managerName, String email){
         if (!checkUserName(username)) {
