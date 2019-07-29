@@ -1,4 +1,10 @@
 # Created by https://www.gitignore.io/api/java,macos,android,androidstudio
+#
+
+### NODE!! ###
+.env
+package-lock.json
+node_modules
 
 ### Android ###
 # Built application files
@@ -18,6 +24,7 @@ out/
 
 # Gradle files
 .gradle/
+build/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -78,8 +85,10 @@ gen-external-apklibs
 # Log Files
 
 # Android Studio
+/*/build/
 /*/local.properties
 /*/out
+/*/*/build
 /*/*/production
 *.ipr
 *~
