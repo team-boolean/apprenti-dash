@@ -23,10 +23,10 @@
                 th:href="@{'/settings'}">
             User Settings</a></li>
         <li th:if="${isLoggedIn == true && currentPage != 'home'}"><a
-                th:href="@{'/forum'}">
+                th:href="@{'/logout'}">
             Logout</a></li>
         <li th:if="${isLoggedIn == false && currentPage != 'home'}"><a
-                th:href="@{'/forum'}">
+                th:href="@{'/login'}">
             Login</a></li>
     </ul>
 
