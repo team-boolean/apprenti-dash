@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-public class Thread {
+public class Discussion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +29,9 @@ public class Thread {
     private String body;
     private int thumbsUp;
 
-    public Thread() {}
+    public Discussion() {}
 
-    public Thread(AppUser author, String title, String body) {
+    public Discussion(AppUser author, String title, String body) {
         this.author = author;
         this.title = title;
         this.body = body;
