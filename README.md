@@ -62,7 +62,7 @@ If you want to fork our code and use it for your own project, you will need to t
 3) Build and run
 
 4) Open your browser to localhost:8080 (The Spring default) 
-    test line
+   
    
    
 
