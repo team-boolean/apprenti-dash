@@ -28,6 +28,12 @@ public class AppUser implements UserDetails {
     private
     Day Currentday;
 
+    @OneToMany (mappedBy = "author")
+    List<Thread> threads;
+
+    @OneToMany (mappedBy = "author")
+    List<Comment> comments;
+
     public AppUser(){}
 
     public AppUser(String username, String password, String firstName, String lastName, String managerName) {
