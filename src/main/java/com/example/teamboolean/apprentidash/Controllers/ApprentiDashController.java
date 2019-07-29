@@ -74,6 +74,35 @@ public class ApprentiDashController {
         return "signup";
     }
 
+    //AppUserSettings Page
+    @GetMapping("/settings")
+    public String getAppUserSettings(Model m, Principal p){
+        //Sets the necessary variables for the nav bar
+        timesheetController.loggedInStatusHelper(m, p);
+        m.addAttribute("currentPage", "appusersettings");
+        return "appusersettings";
+    }
+
+    //AppUserSettings Page
+    @GetMapping("/forum")
+    public String getForum(Model m, Principal p){
+        //Sets the necessary variables for the nav bar
+        timesheetController.loggedInStatusHelper(m, p);
+        m.addAttribute("currentPage", "forum");
+        return "forum";
+    }
+
+    //AppUserSettings Page
+    @GetMapping("/thread/{id}")
+    public String getThread(@PathVariable String id, Model m, Principal p){
+        //Sets the necessary variables for the nav bar
+        // add ID Get of Thread form ThreadRepository
+        timesheetController.loggedInStatusHelper(m, p);
+        m.addAttribute("currentPage", "thread");
+        return "thread";
+    }
+
+
     @PostMapping("/signup")
     public String addUser(String username, String password, String firstName, String lastName, String managerName, String email){
         if (!checkUserName(username)) {
