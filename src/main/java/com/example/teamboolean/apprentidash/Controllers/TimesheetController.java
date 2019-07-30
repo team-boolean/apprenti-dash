@@ -72,7 +72,7 @@ public class TimesheetController {
         }else if(buttonRenderHelper(currentUser).equals("lunchOut")) {
             currentUser.getCurrentday().setLunchEnd(now);
         }else if(buttonRenderHelper(currentUser).equals("clockOut")){
-            sendMessage("19202875626","You are clockOut ");
+            sendMessage(currentUser.getPhone(),"You are clockOut ");
             currentUser.getCurrentday().setClockOut(now);
         }
 
