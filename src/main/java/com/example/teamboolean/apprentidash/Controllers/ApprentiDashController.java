@@ -41,6 +41,7 @@ public class ApprentiDashController {
         // otherwise, direct them to home page
         // Huge thanks to David for the idea!
         if(p != null){
+            m.addAttribute("currentPage", "home");
             return new RedirectView("/recordHour");
         } else {
             return new RedirectView("/home");
@@ -74,10 +75,20 @@ public class ApprentiDashController {
         return "signup";
     }
 
+    //AppUserSettings Page
+    @GetMapping("/settings")
+    public String getAppUserSettings(Model m, Principal p){
+        //Sets the necessary variables for the nav bar
+        m.addAttribute("isLoggedIn",true);
+        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
+        m.addAttribute("currentPage", "settings");
+        return "appusersettings";
+    }
+
     @PostMapping("/signup")
-    public String addUser(String username, String password, String firstName, String lastName, String managerName){
+    public String addUser(String username, String password, String firstName, String lastName, String managerName, String email){
         if (!checkUserName(username)) {
-            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName);
+            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName, email);
             appUserRepository.save(newUser);
             Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);

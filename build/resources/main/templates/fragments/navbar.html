@@ -1,10 +1,12 @@
 
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="navbar(userFirstName, isLoggedIn, currentPage)" class="navbar">
+
     <h3>Welcome, <span th:text="${userFirstName}"></span>!</h3>
+    <h1><a th:href="@{'/'}">Apprenti Dashboard</a></h1>
 <!-- Displays Log in or log out depending on logged in status-->
-    <a class="logout_in" th:if="${isLoggedIn == true && currentPage != 'home'}" th:href="@{'/logout'}">Logout</a>
-    <a class="logout_in" th:if="${isLoggedIn == false && currentPage != 'home'}" th:href="@{'/login'}">Login</a>
+<!--    <a class="logout_in" th:if="${isLoggedIn == true && currentPage != 'home'}" th:href="@{'/logout'}">Logout</a>-->
+<!--    <a class="logout_in" th:if="${isLoggedIn == false && currentPage != 'home'}" th:href="@{'/login'}">Login</a>-->
     <ul>
 <!-- Nav bar checks which page it is on and turns off unnecessary buttons, huge thanks to David for the idea!-->
         <li th:if="${currentPage != 'home' && currentPage != 'summary' && currentPage != 'signup'}"><a
@@ -14,6 +16,18 @@
         <li th:if="${currentPage != 'home' && currentPage != 'clock_in' && currentPage != 'signup'}"><a
                 th:href="@{'/recordHour'}">
             Clock In Page</a></li>
+        <li th:if="${currentPage != 'home' && currentPage != 'forum' && currentPage != 'signup'}"><a
+                th:href="@{'/forum'}">
+            Forum</a></li>
+        <li th:if="${isLoggedIn == true && currentPage != 'settings'}"><a
+                th:href="@{'/settings'}">
+            User Settings</a></li>
+        <li th:if="${isLoggedIn == true && currentPage != 'home'}"><a
+                th:href="@{'/forum'}">
+            Logout</a></li>
+        <li th:if="${isLoggedIn == false && currentPage != 'home'}"><a
+                th:href="@{'/forum'}">
+            Login</a></li>
     </ul>
 
 </div>
