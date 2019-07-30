@@ -79,10 +79,29 @@ public class ApprentiDashController {
     @GetMapping("/settings")
     public String getAppUserSettings(Model m, Principal p){
         //Sets the necessary variables for the nav bar
+        AppUser appUser = appUserRepository.findByUsername(p.getName());
+        m.addAttribute("appuser",appUser);
         m.addAttribute("isLoggedIn",true);
         m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
         m.addAttribute("currentPage", "settings");
         return "appusersettings";
+    }
+
+    //AppUserSettings Page
+    @PutMapping("/settings")
+    public RedirectView editAppUserSettings(Model m, Principal p, String firstname, String lastname, String manager, String email){
+        //Sets the necessary variables for the nav bar
+        AppUser appUser = appUserRepository.findByUsername(p.getName());
+        appUser.setFirstName(firstname);
+        appUser.setLastName(lastname);
+        appUser.setManagerName(manager);
+        appUser.setEmail(email);
+        appUserRepository.save(appUser);
+        m.addAttribute("isLoggedIn",true);
+        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
+        m.addAttribute("currentPage", "settings");
+
+        return new RedirectView("/");
     }
 
     @PostMapping("/signup")
