@@ -122,7 +122,7 @@ public class Day {
      * Method to return string separated by comma
      * @return String
      */
-    public String toString(){
+    public String toExcelString(){
         //day string
         DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("EEEE");
         String day = clockIn.format(dayFormat);

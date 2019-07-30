@@ -189,9 +189,8 @@ public class TimesheetController {
         //Set all the Dates to the date provided in the edit, and update new values
         //(if the user didn't update date, it already defaults to the date's original date)
 
-
         //TODO: Create a helper function for these
-        //code to check if the user make any modifications to the lunch start date field
+        //Checks if the user made any modifications to the lunch start date field
         if(!(lunchStart.equals(""))){
             LocalTime lunchStartLocalTime = LocalTime.parse(lunchStart);
 
@@ -210,7 +209,7 @@ public class TimesheetController {
 
         }
 
-        //code to check if the user make any modifications to the lunch end date field
+        //Checks if the user made any modifications to the lunch end date field
         if(!(lunchEnd.equals(""))){
             LocalTime lunchEndLocalTime = LocalTime.parse(lunchEnd);
 
@@ -219,7 +218,7 @@ public class TimesheetController {
                 currentDay.setLunchEnd(currentDay.getClockIn());
             }
 
-            //overwrite the hours and minutes of the lunch start to match with the modifications the user made
+            //overwrite the hours and minutes of the lunch end to match with the modifications the user made
             //update the date to make sure it is still on the same date as clock in
             currentDay.setLunchEnd(
                     currentDay.getLunchEnd()
@@ -228,7 +227,7 @@ public class TimesheetController {
                             .withDayOfYear(clockInDate.getDayOfYear()));
         }
 
-        //code to check if the user make any modifications to the clock out date field
+        //Checks if the user make any modifications to the clock out date field
         if(!(clockOut.equals(""))) {
             LocalTime clockOutLocalTime = LocalTime.parse(clockOut);
 
@@ -292,12 +291,14 @@ public class TimesheetController {
         //Write to file and download
         PrintWriter csvWriter = response.getWriter();
 
+        generateHardcodedTemplate(csvWriter);
+
         String header = "Day,Date,Time In,Time Out,Lunch,Daily Hours";
         csvWriter.println(header);
 
         for(Day curDay: dateRange){
 
-            csvWriter.println(curDay.toString());
+            csvWriter.println(curDay.toExcelString());
         }
 
         csvWriter.println(",,,,Total Hours:," + totalHours);
@@ -306,7 +307,26 @@ public class TimesheetController {
     }
 
 
-    /******************************** All the helper function ************************************/
+    /******************************** All the helper functions ************************************/
+
+    //Builds the hardcoded template for the timesheet
+    private PrintWriter generateHardcodedTemplate(PrintWriter csvWriter){
+
+        //Will construct the template line by line, with symbols to be replaced later by values
+        StringBuilder firstLine = new StringBuilder();
+        addCommas(6, firstLine);
+        firstLine.append("TIME RECORD SHEET");
+
+    }
+
+
+    //Helper to append commas to a String for a cvs file
+    private void addCommas(int commas, StringBuilder stringBuilder){
+        for(int i = 0; i < commas; i++){
+            stringBuilder.append(",");
+        }
+
+    }
 
     //helper function to handle the punch in page. It checks which day instance variable hasnt been clicked yet, and returns that to the view to
     // display a button for it
