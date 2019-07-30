@@ -173,56 +173,85 @@ public class TimesheetController {
     }
 
     @PostMapping("/edit")
-    public String postEdit(long dayId,String clockIn, String clockOut, String lunchStart, String lunchEnd){
+    public String postEdit(long dayId,String clockIn, String clockOut, String lunchStart, String lunchEnd,
+                           String newDate){
         Day currentDay = dayRepository.findById(dayId).get();
-        LocalTime clockInLocalTime = LocalTime.parse(clockIn);
-        //update the clockIn to column to the newly edited hours and minutes
-        currentDay.setClockIn(currentDay.getClockIn().withHour(clockInLocalTime.getHour()).withMinute(clockInLocalTime.getMinute()));
 
+        //Since we get the time and date from two separate input fields, we are saving them separately for now.
+        LocalTime clockInTime = LocalTime.parse(clockIn);
+        LocalDate clockInDate = LocalDate.parse(newDate);
+
+        //Editing LocalDateTime:  https://www.javabrahman.com/java-8/java-8-working-with-localdate-localtime-localdatetime-tutorial-with-examples/
+
+        //update the clockIn to column to the newly edited time and date
+        currentDay.setClockIn(
+                currentDay.getClockIn()
+                        .withHour(clockInTime.getHour())
+                        .withMinute(clockInTime.getMinute())
+                        .withDayOfYear(clockInDate.getDayOfYear())
+                );
+
+        //Set all the Dates to the date provided in the edit, and update new values
+        //(if the user didn't update date, it already defaults to the date's original date)
+
+
+        //TODO: Create a helper function for these
         //code to check if the user make any modifications to the lunch start date field
         if(!(lunchStart.equals(""))){
             LocalTime lunchStartLocalTime = LocalTime.parse(lunchStart);
-            //check if the user never started a lunch in before trying to edit his/her lunch in
-            if(currentDay.getLunchStart() == null){
-                //set the lunch start date to the clock in date
+
+            //If the LunchStart was null, initialize it using the ClockIn date
+            if(currentDay.getLunchStart() == null) {
                 currentDay.setLunchStart(currentDay.getClockIn());
-                //overwrite the hours and minutes of the lunch start to match with the modifications the user made
-                currentDay.setLunchStart(currentDay.getLunchStart().withHour(lunchStartLocalTime.getHour()).withMinute(lunchStartLocalTime.getMinute()));
-            }else{
-                //if the user already clicked on lunch in, just update the newly modified hours and minutes
-                currentDay.setLunchStart(currentDay.getLunchStart().withHour(lunchStartLocalTime.getHour()).withMinute(lunchStartLocalTime.getMinute()));
             }
+
+            //overwrite the hours and minutes of the lunch start to match with the modifications the user made
+            //update the date to make sure it is still on the same date as clock in
+            currentDay.setLunchStart(
+                    currentDay.getLunchStart()
+                            .withHour(lunchStartLocalTime.getHour())
+                            .withMinute(lunchStartLocalTime.getMinute())
+                            .withDayOfYear(clockInDate.getDayOfYear()));
+
         }
 
         //code to check if the user make any modifications to the lunch end date field
         if(!(lunchEnd.equals(""))){
             LocalTime lunchEndLocalTime = LocalTime.parse(lunchEnd);
-            //check if the user never started a lunch out before trying to edit his/her lunch out
-            if(currentDay.getLunchEnd() == null){
-                //set the lunch end date to the clock in date
+
+            //If the LunchEnd was null, initialize it using the ClockIn date
+            if(currentDay.getLunchEnd() == null) {
                 currentDay.setLunchEnd(currentDay.getClockIn());
-                //overwrite the hours and minutes of the lunch end to match with the modifications the user made
-                currentDay.setLunchEnd(currentDay.getLunchEnd().withHour(lunchEndLocalTime.getHour()).withMinute(lunchEndLocalTime.getMinute()));
-            }else{
-                //if the user already clicked on lunch out, just update the newly modified hours and minutes
-                currentDay.setLunchEnd(currentDay.getLunchEnd().withHour(lunchEndLocalTime.getHour()).withMinute(lunchEndLocalTime.getMinute()));
             }
+
+            //overwrite the hours and minutes of the lunch start to match with the modifications the user made
+            //update the date to make sure it is still on the same date as clock in
+            currentDay.setLunchEnd(
+                    currentDay.getLunchEnd()
+                            .withHour(lunchEndLocalTime.getHour())
+                            .withMinute(lunchEndLocalTime.getMinute())
+                            .withDayOfYear(clockInDate.getDayOfYear()));
         }
 
         //code to check if the user make any modifications to the clock out date field
-        if(!(clockOut.equals(""))){
+        if(!(clockOut.equals(""))) {
             LocalTime clockOutLocalTime = LocalTime.parse(clockOut);
-            //check if the user never clocked out before trying to edit his/her clock out
-            if(currentDay.getClockOut() == null){
-                //set the clock out date to the clock in date
+
+            //If the Clockout was null, initialize it using the ClockIn date
+            if (currentDay.getClockOut() == null) {
                 currentDay.setClockOut(currentDay.getClockIn());
-                //overwrite the hours and minutes of the clock out to match with the modifications the user made
-                currentDay.setClockOut(currentDay.getClockOut().withHour(clockOutLocalTime.getHour()).withMinute(clockOutLocalTime.getMinute()));
-            }else{
-                //if the user already clicked on clock out, just update the newly modified hours and minutes
-                currentDay.setClockOut(currentDay.getClockOut().withHour(clockOutLocalTime.getHour()).withMinute(clockOutLocalTime.getMinute()));
             }
+
+            //overwrite the hours and minutes of the clockout to match with the modifications the user made
+            //update the date to make sure it is still on the same date as clock in
+            currentDay.setClockOut(
+                    currentDay.getClockOut()
+                            .withHour(clockOutLocalTime.getHour())
+                            .withMinute(clockOutLocalTime.getMinute())
+                            .withDayOfYear(clockInDate.getDayOfYear()));
         }
+
+
         dayRepository.save(currentDay);
         return "redirect:/summary";
     }
