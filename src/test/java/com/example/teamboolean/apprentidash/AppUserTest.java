@@ -29,8 +29,9 @@ public class AppUserTest {
         String firstName = "FirstName";
         String lastName = "LastName";
         String managerName = "ManagerName";
+        String email = "Email";
 
-        AppUser test = new AppUser(userName, password, firstName, lastName, managerName);
+        AppUser test = new AppUser(userName, password, firstName, lastName, managerName, email);
 
 
         assertEquals("should return instance of a username", "itsName", test.getUsername());
@@ -38,6 +39,7 @@ public class AppUserTest {
         assertEquals("should return instance of a first name", "FirstName", test.getFirstName());
         assertEquals("should return instance of a last name", "LastName", test.getLastName());
         assertEquals("should return instance of a manager name", "ManagerName", test.getManagerName());
+        assertEquals("should return instance of an email", "Email", test.getEmail());
 
     }
 
@@ -52,7 +54,7 @@ public class AppUserTest {
         String firstName = "FirstName";
         String lastName = "LastName";
 
-        AppUser test = new AppUser(userName, password, firstName, lastName, "");
+        AppUser test = new AppUser(userName, password, firstName, lastName, "", "");
 
 
         assertEquals("should return instance of a username", "itsName", test.getUsername());
