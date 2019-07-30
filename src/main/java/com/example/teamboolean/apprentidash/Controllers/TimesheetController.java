@@ -293,15 +293,14 @@ public class TimesheetController {
 
         generateHardcodedTemplate(csvWriter);
 
-        String header = "Day,Date,Time In,Time Out,Lunch,Daily Hours";
-        csvWriter.println(header);
 
+
+        //TODO: replace each ^ with admin values, # with date values, ~ with duplicate day values, and @ with Total
         for(Day curDay: dateRange){
 
             csvWriter.println(curDay.toExcelString());
         }
 
-        csvWriter.println(",,,,Total Hours:," + totalHours);
         csvWriter.close();
 
     }
@@ -316,6 +315,15 @@ public class TimesheetController {
         StringBuilder firstLine = new StringBuilder();
         addCommas(6, firstLine);
         firstLine.append("TIME RECORD SHEET");
+        csvWriter.println(firstLine);
+
+        StringBuilder secondLine = new StringBuilder();
+        addCommas(4, secondLine);
+        secondLine.append("Week Ending: ,,^");
+        csvWriter.println(secondLine);
+
+        return csvWriter;
+
 
     }
 
