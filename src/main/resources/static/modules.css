@@ -1,7 +1,7 @@
 
-/* Nav Bar */
+/* Nav Bar
 .navbar {
-  /* Photo by Murray Campbell on Unsplash https://unsplash.com/photos/B_TdfGFuGwA */
+ /* Photo by Murray Campbell on Unsplash https://unsplash.com/photos/B_TdfGFuGwA
   background-image: url("/images/navbar_background_darker.jpg");
   font-size: 20px;
   color: #fafafa;
@@ -18,7 +18,7 @@
 }
 
 /* TODO: Combine logout_in styling with navbar lis. 
-  Only difference right now is that logout_in needs 50px margin right. */
+  Only difference right now is that logout_in needs 50px margin right.
 .logout_in {
   margin-right: 50px;
   padding: 5px;
@@ -61,6 +61,51 @@
   text-decoration: none;
   color: inherit;
 }
+
+*/
+.mt {
+    margin-top: 8vh;
+}
+
+.welcome {
+   color: #fafafa;
+   padding-right: 25%;
+}
+
+
+.title {
+    display: inline;
+    text-align: center;
+}
+
+
+.appUserEdit{
+    width:50%;
+    margin:10vh auto;
+}
+
+.appUserEdit form{
+    border: 1px solid #ccc !important;
+    padding: 2rem !important;
+    font-family: 'Noto Sans HK', sans-serif;
+    -webkit-box-shadow: 0 8px 6px -6px rgba(255,255,255, 0.5);
+    -moz-box-shadow: 0 8px 6px -6px rgba(255,255,255, 0.5);
+    box-shadow: 0 8px 6px -6px rgba(255,255,255, 0.5);
+}
+
+.form-signin {
+    width: 100%;
+    max-width: 420px;
+    padding: 15px;
+    margin: auto;
+}
+
+.form-label-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+------------
 
 /* Home Page */
 .home_title {
@@ -120,9 +165,11 @@
   margin: 15px;
 }
 
+/*
 .main_content form {
   margin: 36px;
 }
+*/
 
 .main_content p {
   margin: 5px;

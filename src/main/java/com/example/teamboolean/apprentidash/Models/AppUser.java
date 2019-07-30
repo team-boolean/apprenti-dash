@@ -17,6 +17,7 @@ public class AppUser implements UserDetails {
     @Column(unique=true)
     String username;
     String password;
+    String email;
     String firstName;
     String lastName;
     String managerName;
@@ -28,14 +29,21 @@ public class AppUser implements UserDetails {
     private
     Day Currentday;
 
+    @OneToMany (mappedBy = "author")
+    List<Discussion> discussions;
+
+    @OneToMany (mappedBy = "author")
+    List<Comment> comments;
+
     public AppUser(){}
 
-    public AppUser(String username, String password, String firstName, String lastName, String managerName) {
+    public AppUser(String username, String password, String firstName, String lastName, String managerName, String email) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.managerName = managerName;
+        this.email = email;
     }
 
     public long getId() {
@@ -103,6 +111,13 @@ public class AppUser implements UserDetails {
         Currentday = currentday;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
