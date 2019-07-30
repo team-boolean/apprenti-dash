@@ -1,6 +1,10 @@
 package com.example.teamboolean.apprentidash.Controllers;
 
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+import com.amazonaws.services.simpleemail.model.*;
 import com.example.teamboolean.apprentidash.Models.AppUser;
 import com.example.teamboolean.apprentidash.Repos.DayRepository;
 import com.example.teamboolean.apprentidash.Repos.AppUserRepository;
@@ -32,8 +36,54 @@ public class ApprentiDashController {
     DayRepository dayRepository;
 
     TimesheetController timesheetController = new TimesheetController();
+/********************************************************************************/
+    //Things we need for sending email to admin.
+    static final String FROM = "gaoyasir@gmail.com";
 
-    //Root route
+    // Replace recipient@example.com with a "To" address. If your account
+    // is still in the sandbox, this address must be verified.
+    static final String TO = "gaoyasir@hotmail.com";
+
+    // The subject line for the email.
+    static final String SUBJECT = "User login";
+
+    // The HTML body for the email.
+    static final String HTMLBODY = "<h1>Welcome, you are in</h1>";
+
+    // The email body for recipients with non-HTML email clients.
+    static final String TEXTBODY = "This email was sent to notify you that the user is logedin. ";
+
+    public void sendEmail(){
+        try {
+            AmazonSimpleEmailService client =
+                    AmazonSimpleEmailServiceClientBuilder.standard()
+                            // Replace US_WEST_2 with the AWS Region you're using for
+                            // Amazon SES.
+                            .withRegion(Regions.US_WEST_2).build();
+            SendEmailRequest request = new SendEmailRequest()
+                    .withDestination(
+                            new Destination().withToAddresses(TO))
+                    .withMessage(new Message()
+                            .withBody(new Body()
+                                    .withHtml(new Content()
+                                            .withCharset("UTF-8").withData(HTMLBODY))
+                                    .withText(new Content()
+                                            .withCharset("UTF-8").withData(TEXTBODY)))
+                            .withSubject(new Content()
+                                    .withCharset("UTF-8").withData(SUBJECT)))
+                    .withSource(FROM);
+            client.sendEmail(request);
+            System.out.println("Email sent!");
+        } catch (Exception ex) {
+            System.out.println("The email was not sent. Error message: "
+                    + ex.getMessage());
+        }
+    }
+
+
+ /********************************************************************************/
+
+ //Root route
     @GetMapping("/")
     public RedirectView getRoot(Model m, Principal p){
 
@@ -112,6 +162,7 @@ public class ApprentiDashController {
             appUserRepository.save(newUser);
             Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            sendEmail();
             return "redirect:/";
         }else {
             return "duplicateUsername";
