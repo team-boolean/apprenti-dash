@@ -18,8 +18,6 @@
 <div class="appUserEdit mt">
     <h3 class="text-center">User Settings</h3>
     <form th:method="PUT" action="/settings" class="appusersettings-form">
-        <!--    String firstname, String lastname, String email, String aptnum, String phonenum, Building building-->
-        <input type="hidden" th:value="${appuser.id}" name="id" id="id" />
         <div class="form-group">
             <label for="firstname">First Name</label><input th:value="${appuser.firstName}" name="firstname" id="firstname" class="form-control" required/>
         </div>
