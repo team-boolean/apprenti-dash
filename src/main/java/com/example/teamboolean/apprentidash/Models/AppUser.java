@@ -18,6 +18,7 @@ public class AppUser implements UserDetails {
     String username;
     String password;
     String email;
+    String phone;
     String firstName;
     String lastName;
     String managerName;
@@ -37,13 +38,14 @@ public class AppUser implements UserDetails {
 
     public AppUser(){}
 
-    public AppUser(String username, String password, String firstName, String lastName, String managerName, String email) {
+    public AppUser(String username, String password, String firstName, String lastName, String managerName, String email, String phone) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.managerName = managerName;
         this.email = email;
+        this.phone = phone;
     }
 
     public long getId() {
@@ -102,7 +104,6 @@ public class AppUser implements UserDetails {
         this.days = days;
     }
 
-
     public Day getCurrentday() {
         return Currentday;
     }
@@ -117,6 +118,14 @@ public class AppUser implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     @Override
