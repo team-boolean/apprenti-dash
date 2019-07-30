@@ -72,7 +72,7 @@ public class TimesheetController {
         }else if(buttonRenderHelper(currentUser).equals("lunchOut")) {
             currentUser.getCurrentday().setLunchEnd(now);
         }else if(buttonRenderHelper(currentUser).equals("clockOut")){
-            sendMessage(currentUser.getPhone(),"You are clockOut ");
+            sendMessage(currentUser.getPhone(),"You are clockOut. Have a good day!");
             currentUser.getCurrentday().setClockOut(now);
         }
 
@@ -150,6 +150,10 @@ public class TimesheetController {
         m.addAttribute("toDate", to);
         m.addAttribute("days", dateRange);
         m.addAttribute("totalHours", totalHours);
+
+        if (totalHours > 40){
+            sendMessage(currentUser.getPhone(),"You total hour is over 40. Please talk to your manager!");
+        }
         return "summary";
     }
 
@@ -398,8 +402,6 @@ public class TimesheetController {
                 .withMessageAttributes(smsAttributes));
         System.out.println(result); // Prints the message ID.
     }
-
-
 
 
 }

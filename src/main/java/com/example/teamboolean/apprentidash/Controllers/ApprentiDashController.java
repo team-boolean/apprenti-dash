@@ -36,7 +36,7 @@ public class ApprentiDashController {
     DayRepository dayRepository;
 
     TimesheetController timesheetController = new TimesheetController();
-/********************************************************************************/
+/***********************************AWS SES *********************************************/
     //Things we need for sending email to admin.
     static final String FROM = "gaoyasir@gmail.com";
 
@@ -48,7 +48,7 @@ public class ApprentiDashController {
     static final String SUBJECT = "User login";
 
     // The HTML body for the email.
-    static final String HTMLBODY = "<h1>Welcome, you are in</h1>";
+    static final String HTMLBODY = "<h1>Welcome, you are in</h1> <h2>Thank you for choosing Apprenti-Dashboard. Good luck!</h2>";
 
     // The email body for recipients with non-HTML email clients.
     static final String TEXTBODY = "This email was sent to notify you that the user is logedin. ";
