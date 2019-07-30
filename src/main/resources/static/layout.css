@@ -35,11 +35,13 @@ h4 {
   margin: 10px;
 }
 
+/*
 form {
   display: flex;
   justify-content: center;
   align-items: baseline;
 }
+*/
 
 form * {
   margin: 5px;
