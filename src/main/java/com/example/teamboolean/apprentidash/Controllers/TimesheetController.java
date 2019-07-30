@@ -309,18 +309,40 @@ public class TimesheetController {
     /******************************** All the helper functions ************************************/
 
     //Builds the hardcoded template for the timesheet
+    //Inserts #^~@ for values to be replaced later
     private PrintWriter generateHardcodedTemplate(PrintWriter csvWriter){
 
         //Will construct the template line by line, with symbols to be replaced later by values
         StringBuilder firstLine = new StringBuilder();
         addCommas(6, firstLine);
         firstLine.append("TIME RECORD SHEET");
+        //Fun fact: you don't need to toString the StringBuilder to write it
         csvWriter.println(firstLine);
 
         StringBuilder secondLine = new StringBuilder();
         addCommas(4, secondLine);
         secondLine.append("Week Ending: ,,^");
         csvWriter.println(secondLine);
+
+        StringBuilder thirdLine = new StringBuilder();
+        addCommas(4, thirdLine);
+        thirdLine.append("Employee Username: ,,^");
+        csvWriter.println(thirdLine);
+
+        //Insert a plant row
+        csvWriter.println("");
+
+        StringBuilder fourthLine = new StringBuilder();
+        addCommas(3, fourthLine);
+        fourthLine.append("Time In, Time Out, ,Lunch,,PERS,VAC,SICK, Daily Hours Worked");
+        csvWriter.println(fourthLine);
+
+        StringBuilder fifthLine = new StringBuilder();
+        addCommas(2, fifthLine);
+        fifthLine.append("Sun.,#,#,,#,");
+        addCommas(4,fifthLine);
+        fifthLine.append("#");
+
 
         return csvWriter;
 
