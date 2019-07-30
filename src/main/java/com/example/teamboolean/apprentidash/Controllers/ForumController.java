@@ -61,11 +61,11 @@ public class ForumController {
 
     //POST Mapping to create new Discussion
     @PostMapping("/forum")
-    public RedirectView createThread(Principal p, String title, String body) {
+    public String createThread(Model m, Principal p, String title, String body) {
         AppUser author = appUserRepository.findByUsername(p.getName());
         Discussion newDiscussion = new Discussion(author, title, body);
         discussionRepository.save(newDiscussion);
-        return new RedirectView("/forum/" + newDiscussion.getId());
+        return getForum(m,p);
     }
 
     @PostMapping("/forum/{id}")
