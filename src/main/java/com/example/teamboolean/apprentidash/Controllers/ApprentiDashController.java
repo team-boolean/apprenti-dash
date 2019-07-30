@@ -89,13 +89,14 @@ public class ApprentiDashController {
 
     //AppUserSettings Page
     @PutMapping("/settings")
-    public RedirectView editAppUserSettings(Model m, Principal p, String firstname, String lastname, String manager, String email){
+    public RedirectView editAppUserSettings(Model m, Principal p, String firstname, String lastname, String manager, String email, String phone){
         //Sets the necessary variables for the nav bar
         AppUser appUser = appUserRepository.findByUsername(p.getName());
         appUser.setFirstName(firstname);
         appUser.setLastName(lastname);
         appUser.setManagerName(manager);
         appUser.setEmail(email);
+        appUser.setPhone(phone);
         appUserRepository.save(appUser);
         m.addAttribute("isLoggedIn",true);
         m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
@@ -105,9 +106,9 @@ public class ApprentiDashController {
     }
 
     @PostMapping("/signup")
-    public String addUser(String username, String password, String firstName, String lastName, String managerName, String email){
+    public String addUser(String username, String password, String firstName, String lastName, String managerName, String email, String phone){
         if (!checkUserName(username)) {
-            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName, email);
+            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName, email, phone);
             appUserRepository.save(newUser);
             Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);
