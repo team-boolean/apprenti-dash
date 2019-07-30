@@ -11,16 +11,16 @@
         <!--    <a class="logout_in" th:if="${isLoggedIn == false && currentPage != 'home'}" th:href="@{'/login'}">Login</a>-->
         <ul class="navbar-nav ml-auto">
             <!-- Nav bar checks which page it is on and turns off unnecessary buttons, huge thanks to David for the idea!-->
-            <li class="nav-item" th:if="${currentPage != 'home' && currentPage != 'summary' && currentPage != 'signup'}"><a
+            <li class="nav-item" th:if="${isLoggedIn == true && currentPage != 'home' && currentPage != 'summary' && currentPage != 'signup'}"><a
                     class="nav-link"
                     th:href="@{'/summary'}">
                 Hours
                 Summary</a></li>
-            <li class="nav-item" th:if="${currentPage != 'home' && currentPage != 'clock_in' && currentPage != 'signup'}"><a
+            <li class="nav-item" th:if="${isLoggedIn == true && currentPage != 'home' && currentPage != 'clock_in' && currentPage != 'signup'}"><a
                     class="nav-link"
                     th:href="@{'/recordHour'}">
                 Clock In Page</a></li>
-            <li class="nav-item" th:if="${currentPage != 'home' && currentPage != 'forum' && currentPage != 'signup'}"><a
+            <li class="nav-item" th:if="${isLoggedIn == true && currentPage != 'home' && currentPage != 'forum' && currentPage != 'signup'}"><a
                     class="nav-link"
                     th:href="@{'/forum'}">
                 Forum</a></li>
