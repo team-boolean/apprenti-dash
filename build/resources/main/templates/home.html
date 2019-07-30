@@ -15,7 +15,6 @@
         <div th:replace="fragments/navbar :: navbar(${userFirstName}, ${isLoggedIn}, ${currentPage})"></div>
     </header>
     <div class="main_content">
-        <h1 class="home_title">Apprentice Dashboard</h1>
         <p>We can help make your OJT clock-in process easier.</p>
 
         <div th:if="${isLoggedIn == false}">
