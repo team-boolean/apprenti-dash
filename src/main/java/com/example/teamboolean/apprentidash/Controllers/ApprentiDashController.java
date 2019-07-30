@@ -155,6 +155,26 @@ public class ApprentiDashController {
         return new RedirectView("/");
     }
 
+    @PutMapping("/resetpassword")
+    public String resetPassword(Model m, Principal p, String oldpassword, String newpassword, String confirmpassword) {
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
+        m.addAttribute("isLoggedIn",true);
+        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
+        m.addAttribute("currentPage", "settings");
+        if (!passwordEncoder.matches(oldpassword, currentUser.getPassword())) {
+            m.addAttribute("statusCode", 0);
+            return "settingsUpdated";
+        } else if (!newpassword.equals(confirmpassword)) {
+            m.addAttribute("statusCode", 1);
+            return "settingsUpdated";
+        } else {
+            currentUser.setPassword(passwordEncoder.encode(newpassword));
+            appUserRepository.save(currentUser);
+            m.addAttribute("statusCode", 2);
+            return "settingsUpdated";
+        }
+    }
+
     @PostMapping("/signup")
     public String addUser(String username, String password, String firstName, String lastName, String managerName, String email, String phone){
         if (!checkUserName(username)) {
