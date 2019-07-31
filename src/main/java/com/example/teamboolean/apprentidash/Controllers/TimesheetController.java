@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.security.Principal;
+import java.text.DecimalFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -300,7 +301,12 @@ public class TimesheetController {
 
 
         //Queue to hold the days so we can pop them off as we use them
-        Queue<Day> dayQueue = new LinkedList<>(dateRange);
+        Queue<Day> dayQueue = new LinkedList<>();
+        dayQueue.addAll(dateRange);
+        System.out.println("dateRange:");
+        System.out.println(dateRange.toString());
+        System.out.println("dayQueue: ");
+        System.out.println(dayQueue.toString());
 
         //TODO: replace each ^ with admin values, # with date values, ~ with duplicate day values, and @ with Total
         //Used this SO for guidance: https://stackoverflow.com/questions/23969007/search-a-column-word-in-csv-file-and-replace-it-by-another-value-java
@@ -313,44 +319,9 @@ public class TimesheetController {
                 String line = template.nextLine();
                 //when we find a line with the target symbol(s), break it down and replace them
                 if(line.contains("#")){
-                    //Since we want a different type of value for each hashtag, we need a different value based on if
-                    // its the first, second or third occurance
                     String[] charsInLine = line.split("");
-                    int hashtagCount = 0;
-
-                    for (String letter : charsInLine){
-                        if(letter.equals("#")){
-                            Day dayToInsert = null;
-                            try{
-                                dayToInsert = dayQueue.remove();
-                            }catch(NoSuchElementException e){
-                                System.out.println("Day Queue is empty");
-                                System.out.println(e);
-                            }
-
-
-                            if(hashtagCount == 0 && dayToInsert != null){
-                                //First # should be clock in
-                                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
-                                String timeIn = dayToInsert.getClockIn().format(timeFormat);
-                            }else if(hashtagCount == 1 && dayToInsert != null){
-                                //TODO: second hashtag should be time out
-
-                                //append "" for now
-                                rowBuilder.append(" ");
-                            }else{
-                                //Fifth # should be replaced with date
-//                                DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("EEEE");
-//                                String day = dayToInsert.getClockIn().format(dayFormat);
-//                                rowBuilder.append(day);
-
-                                //append "" for now
-                                rowBuilder.append(" ");
-                            }
-                        }else{
-                            rowBuilder.append(letter);
-                        }
-                    }
+                    //Replace all the #s with the appropriate day values (Time in, time out, etc)
+                    hashtagHelper(rowBuilder, dayQueue, charsInLine);
 
                 }else{
                     rowBuilder.append(line);
@@ -373,55 +344,71 @@ public class TimesheetController {
 
     /******************************** All the helper functions ************************************/
 
-    //Builds the hardcoded template for the timesheet
-    //Inserts #^~@ for values to be replaced later
-    private PrintWriter generateHardcodedTemplate(PrintWriter csvWriter){
+    //Replaces #'s with appropriate values when building new csv from template
+    private void hashtagHelper(StringBuilder rowBuilder, Queue<Day> dayQueue, String[] charsInLine){
+        //Since we want a different type of value for each hashtag, we need a different value based on if
+        // its the first, second or third occurance
 
-        //Will construct the template line by line, with symbols to be replaced later by values
-        StringBuilder firstLine = new StringBuilder();
-        addCommas(6, firstLine);
-        firstLine.append("TIME RECORD SHEET");
-        //Fun fact: you don't need to toString the StringBuilder to write it
-        csvWriter.println(firstLine);
-
-        StringBuilder secondLine = new StringBuilder();
-        addCommas(4, secondLine);
-        secondLine.append("Week Ending: ,,^");
-        csvWriter.println(secondLine);
-
-        StringBuilder thirdLine = new StringBuilder();
-        addCommas(4, thirdLine);
-        thirdLine.append("Employee Username: ,,^");
-        csvWriter.println(thirdLine);
-
-        //Insert a blank row
-        csvWriter.println("");
-
-        StringBuilder fourthLine = new StringBuilder();
-        addCommas(3, fourthLine);
-        fourthLine.append("Time In, Time Out, ,Lunch,,PERS,VAC,SICK, Daily Hours Worked");
-        csvWriter.println(fourthLine);
-
-        StringBuilder fifthLine = new StringBuilder();
-        addCommas(2, fifthLine);
-        fifthLine.append("Sun.,#,#,,#,");
-        addCommas(4,fifthLine);
-        fifthLine.append("#");
-        csvWriter.println(fifthLine);
-
-
-        return csvWriter;
-
-
-    }
-
-
-    //Helper to append commas to a String for a cvs file
-    private void addCommas(int commas, StringBuilder stringBuilder){
-        for(int i = 0; i < commas; i++){
-            stringBuilder.append(",");
+        int hashtagCount = 0;
+        Day dayToInsert = null;
+        try{
+            dayToInsert = dayQueue.remove();
+        }catch(NoSuchElementException e){
+            System.out.println("Day Queue is empty");
+            System.out.println(e);
         }
 
+        for (String letter : charsInLine){
+            if(letter.equals("#")){
+
+                if(hashtagCount == 0 && dayToInsert != null){
+                    //First # should be clock in
+                    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+                    String timeIn = dayToInsert.getClockIn().format(timeFormat);
+                    rowBuilder.append(timeIn);
+                    hashtagCount++;
+                }else if(hashtagCount == 1){
+                    //Secong # should be clock out. Only append if it is not null
+                    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+                    if(dayToInsert.getClockOut() != null){
+                        String timeOut = dayToInsert.getClockOut().format(timeFormat);
+                        rowBuilder.append(timeOut);
+                    }else{
+                        rowBuilder.append(" ");
+                    }
+                    hashtagCount++;
+
+                }else if(hashtagCount == 2){
+                    //Third # should be Lunch length
+                    Double lunch = dayToInsert.calculateLunch();
+                    //Decimal format courtesy of SO:
+                    // https://stackoverflow.com/questions/8137218/trim-double-to-2-decimal-places
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    rowBuilder.append(df.format(lunch));
+                    hashtagCount++;
+                }else if(hashtagCount == 3){
+                    //Fourth # should be Daily hours
+                    //Decimal format courtesy of SO:
+                    // https://stackoverflow.com/questions/8137218/trim-double-to-2-decimal-places
+                    double dailyHours = dayToInsert.calculateDailyHours();
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    rowBuilder.append(df.format(dailyHours));
+                    hashtagCount++;
+                }else if(hashtagCount == 4){
+                    //Fifth # should be the date
+                    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                    String date = dayToInsert.getClockIn().format(dateFormat);
+                    rowBuilder.append(date);
+                    hashtagCount++;
+                }else{
+
+                    //replace # with " " if none of the above applies
+                    rowBuilder.append(" ");
+                }
+            }else{
+                rowBuilder.append(letter);
+            }
+        }
     }
 
     //helper function to handle the punch in page. It checks which day instance variable hasnt been clicked yet, and returns that to the view to
