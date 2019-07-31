@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Controller
@@ -37,7 +39,7 @@ public class ForumController {
         m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
         m.addAttribute("currentPage", "forum");
 
-        Iterable<Discussion> allDiscussions = discussionRepository.findAll();
+        List<Discussion> allDiscussions = discussionRepository.findAllByOrderByCreatedAtDesc();
         m.addAttribute("allDiscussions", allDiscussions);
         return "forum";
     }
