@@ -138,7 +138,7 @@ public class ApprentiDashController {
 
     //AppUserSettings Page
     @PutMapping("/settings")
-    public RedirectView editAppUserSettings(Model m, Principal p, String firstname, String lastname, String manager, String email, String phone){
+    public String editAppUserSettings(Model m, Principal p, String firstname, String lastname, String manager, String email, String phone, boolean optEmail, boolean optText){
         //Sets the necessary variables for the nav bar
         AppUser appUser = appUserRepository.findByUsername(p.getName());
         appUser.setFirstName(firstname);
@@ -146,12 +146,12 @@ public class ApprentiDashController {
         appUser.setManagerName(manager);
         appUser.setEmail(email);
         appUser.setPhone(phone);
+        appUser.setOptEmail(optEmail);
+        appUser.setOptText(optText);
         appUserRepository.save(appUser);
-        m.addAttribute("isLoggedIn",true);
-        m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
-        m.addAttribute("currentPage", "settings");
+        m.addAttribute("editSaved",1);
 
-        return new RedirectView("/");
+        return getAppUserSettings(m,p);
     }
 
     @PutMapping("/resetpassword")
@@ -162,22 +162,22 @@ public class ApprentiDashController {
         m.addAttribute("currentPage", "settings");
         if (!passwordEncoder.matches(oldpassword, currentUser.getPassword())) {
             m.addAttribute("statusCode", 0);
-            return "settingsUpdated";
+            return getAppUserSettings(m,p);
         } else if (!newpassword.equals(confirmpassword)) {
             m.addAttribute("statusCode", 1);
-            return "settingsUpdated";
+            return getAppUserSettings(m,p);
         } else {
             currentUser.setPassword(passwordEncoder.encode(newpassword));
             appUserRepository.save(currentUser);
             m.addAttribute("statusCode", 2);
-            return "settingsUpdated";
+            return getAppUserSettings(m,p);
         }
     }
 
     @PostMapping("/signup")
-    public String addUser(String username, String password, String firstName, String lastName, String managerName, String email, String phone){
+    public String addUser(String username, String password, String firstName, String lastName, String managerName, String email, String phone, boolean optEmail, boolean optText){
         if (!checkUserName(username)) {
-            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName, email, phone);
+            AppUser newUser = new AppUser(username, passwordEncoder.encode(password), firstName, lastName, managerName, email, phone, optEmail, optText);
             appUserRepository.save(newUser);
             Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authentication);

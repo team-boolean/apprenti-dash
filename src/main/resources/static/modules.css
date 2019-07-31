@@ -79,12 +79,12 @@
 }
 
 
-.appUserEdit{
+.appUserEdit,.signUpDiv,.alertDiv{
     width:50%;
-    margin:10vh auto;
+    margin:5vh auto;
 }
 
-.appUserEdit form{
+.appUserEdit,.signUpDiv form{
     border: 1px solid #ccc !important;
     padding: 2rem !important;
     font-family: 'Noto Sans HK', sans-serif;
