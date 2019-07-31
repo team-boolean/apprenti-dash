@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Controller
@@ -37,7 +39,7 @@ public class ForumController {
         m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
         m.addAttribute("currentPage", "forum");
 
-        Iterable<Discussion> allDiscussions = discussionRepository.findAll();
+        List<Discussion> allDiscussions = discussionRepository.findAllByOrderByCreatedAtDesc();
         m.addAttribute("allDiscussions", allDiscussions);
         return "forum";
     }
@@ -55,28 +57,28 @@ public class ForumController {
         Iterable<Comment> allComments = discussion.getComments();
 
         m.addAttribute("discussion", discussion);
-        m.addAttribute("allComments", allComments);
+
         return "discussion";
     }
 
     //POST Mapping to create new Discussion
     @PostMapping("/forum")
-    public RedirectView createThread(Principal p, String title, String body) {
+    public String createThread(Model m, Principal p, String title, String body) {
         AppUser author = appUserRepository.findByUsername(p.getName());
         Discussion newDiscussion = new Discussion(author, title, body);
         discussionRepository.save(newDiscussion);
-        return new RedirectView("/forum/" + newDiscussion.getId());
+        return getForum(m,p);
     }
 
     @PostMapping("/forum/{id}")
-    public RedirectView createComment(@PathVariable long id, Principal p, String body) {
+    public String createComment(@PathVariable long id, Model m, Principal p, String body) {
         AppUser author = appUserRepository.findByUsername(p.getName());
         Discussion parentDiscussion = discussionRepository.findById(id);
         Comment newComment = new Comment(author, parentDiscussion, body);
 
         commentRepository.save(newComment);
 
-        return new RedirectView("/forum/" + id);
+        return getThread(id,m,p);
     }
 
 }
