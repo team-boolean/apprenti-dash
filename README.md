@@ -1,11 +1,11 @@
-# ApprentiDash
+# ApprentiDash v2 - Team Queue 
 
 This is a project designed to help apprentices clock their hours for OJT. 
-Current repo is forked off from [older version](https://github.com/team-boolean/apprenti-dash).
+Current repo is forked off from [older version](https://github.com/team-queue/apprenti-dash).
 
 Can also be used for any general timesheet needs. 
 
-You can find the live deployment [here](http://apprenti.us-west-2.elasticbeanstalk.com/).
+You can find the live deployment [here](http://finalprojectapprentidashboard-env.4gepw3ap4a.us-west-2.elasticbeanstalk.com).
 
 You can find our mock press release [here](./PressRelease.md) 
 
@@ -29,7 +29,18 @@ You can find our mock press release [here](./PressRelease.md)
 - Bootstrap
 
 ## Architecture/Data-Flow
--- put UML flow diagram here
+![Flow Diagram](./src/main/resources/static/images/ApprentiDash_Dataflow.jpg)
+
+## CI/CD - Deployment Process
+We have partially automated our deployment process using CodePipeline to listen to changes on the master branch of our GitHub repo. However, we are still manually building the application.jar file used by EB. These are the steps we took each time we deployed our current working (Development) branch.
+1. Merge all working branches into the development branch.
+2. Pull development branch, test to make sure the app is working.
+3. Edit application.properties, comment in/out the appropriate lines for deployed app vs. running app locally.
+4. In console, run ./gradlew bootJar
+5. Copy /build/libs/application.jar into the root level of the repo, replacing the old application.jar file there.
+6. Merge these changes back into the GitHub development branch.
+7. Merge Github development branch into GitHub master branch. Now, CodePipeline will detect the changes to master branch, pass the repo to EB, and EB will deploy the new application.jar file to an EC2 instance.
+8. Finally, everybody pulls master to master on their local machines, and pulls development to development to avoid merge conflicts.
 
 ## Features
 
