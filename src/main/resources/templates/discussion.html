@@ -20,7 +20,7 @@
             <span th:text="${discussion.author.username}"></span>
             <p th:text="${discussion.body}"></p>
         </div>
-        <ul th:each="comment : ${allComments}">
+        <ul th:each="comment : ${discussion.comments}">
             <li>
                 <div th:replace="fragments/comment :: .comment">...</div>
             </li>
@@ -39,7 +39,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form th:method="POST" action="'/forum' + ${discussion.id}">
+                        <form th:method="POST" th:action="'/forum/' + ${discussion.id}">
                             <div class="form-group">
                                 <label for="body" class="col-form-label">Discussion Body:</label>
                                 <textarea class="form-control" name="body" id="body"></textarea>

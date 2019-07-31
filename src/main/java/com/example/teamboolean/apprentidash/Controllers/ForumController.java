@@ -57,7 +57,7 @@ public class ForumController {
         Iterable<Comment> allComments = discussion.getComments();
 
         m.addAttribute("discussion", discussion);
-        m.addAttribute("allComments", allComments);
+
         return "discussion";
     }
 
@@ -71,14 +71,14 @@ public class ForumController {
     }
 
     @PostMapping("/forum/{id}")
-    public RedirectView createComment(@PathVariable long id, Principal p, String body) {
+    public String createComment(@PathVariable long id, Model m, Principal p, String body) {
         AppUser author = appUserRepository.findByUsername(p.getName());
         Discussion parentDiscussion = discussionRepository.findById(id);
         Comment newComment = new Comment(author, parentDiscussion, body);
 
         commentRepository.save(newComment);
 
-        return new RedirectView("/forum/" + id);
+        return getThread(id,m,p);
     }
 
 }
