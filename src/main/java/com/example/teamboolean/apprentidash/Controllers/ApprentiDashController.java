@@ -138,7 +138,7 @@ public class ApprentiDashController {
 
     //AppUserSettings Page
     @PutMapping("/settings")
-    public RedirectView editAppUserSettings(Model m, Principal p, String firstname, String lastname, String manager, String email, String phone){
+    public RedirectView editAppUserSettings(Model m, Principal p, String firstname, String lastname, String manager, String email, String phone, boolean optEmail, boolean optText){
         //Sets the necessary variables for the nav bar
         AppUser appUser = appUserRepository.findByUsername(p.getName());
         appUser.setFirstName(firstname);
@@ -146,6 +146,8 @@ public class ApprentiDashController {
         appUser.setManagerName(manager);
         appUser.setEmail(email);
         appUser.setPhone(phone);
+        appUser.setOptEmail(optEmail);
+        appUser.setOptText(optText);
         appUserRepository.save(appUser);
         m.addAttribute("isLoggedIn",true);
         m.addAttribute("userFirstName", appUserRepository.findByUsername(p.getName()).getFirstName());
