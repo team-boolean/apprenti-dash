@@ -305,9 +305,6 @@ public class TimesheetController {
         //TODO: replace each ^ with admin values, # with date values, ~ with duplicate day values, and @ with Total
         //Used this SO for guidance: https://stackoverflow.com/questions/23969007/search-a-column-word-in-csv-file-and-replace-it-by-another-value-java
         try{
-            System.out.println("Current directory: ");
-            Path path = FileSystems.getDefault().getPath(".").toAbsolutePath();
-            System.out.println(path);
             Scanner template = new Scanner(new File("./src/main/resources/csvTemplates/template.csv"));
 
             //Go through the template to look for and replace values
@@ -318,35 +315,42 @@ public class TimesheetController {
                 if(line.contains("#")){
                     //Since we want a different type of value for each hashtag, we need a different value based on if
                     // its the first, second or third occurance
-//                    String[] charsInLine = line.split("");
-//                    int hashtagCount = 0;
-//
-//                    for (String letter : charsInLine){
-//                        if(letter.equals("#")){
-//                            Day dayToInsert = dayQueue.remove();
-//
-//                            if(hashtagCount == 0){
-//                                //First # should be clock in
-//                                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
-//                                String timeIn = dayToInsert.getClockIn().format(timeFormat);
-//                            }else if(hashtagCount == 1){
-//                                //TODO: second hashtag should be time out
-//
-//                                //append "" for now
-//                                rowBuilder.append("");
-//                            }else{
-//                                //Fifth # should be replaced with date
-////                                DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("EEEE");
-////                                String day = dayToInsert.getClockIn().format(dayFormat);
-////                                rowBuilder.append(day);
-//
-//                                //append "" for now
-//                                rowBuilder.append("");
-//                            }
-//                        }else{
-//                            rowBuilder.append(letter);
-//                        }
-//                    }
+                    String[] charsInLine = line.split("");
+                    int hashtagCount = 0;
+
+                    for (String letter : charsInLine){
+                        if(letter.equals("#")){
+                            Day dayToInsert = null;
+                            try{
+                                dayToInsert = dayQueue.remove();
+                            }catch(NoSuchElementException e){
+                                System.out.println("Day Queue is empty");
+                                System.out.println(e);
+                            }
+
+
+                            if(hashtagCount == 0 && dayToInsert != null){
+                                //First # should be clock in
+                                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+                                String timeIn = dayToInsert.getClockIn().format(timeFormat);
+                            }else if(hashtagCount == 1 && dayToInsert != null){
+                                //TODO: second hashtag should be time out
+
+                                //append "" for now
+                                rowBuilder.append(" ");
+                            }else{
+                                //Fifth # should be replaced with date
+//                                DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("EEEE");
+//                                String day = dayToInsert.getClockIn().format(dayFormat);
+//                                rowBuilder.append(day);
+
+                                //append "" for now
+                                rowBuilder.append(" ");
+                            }
+                        }else{
+                            rowBuilder.append(letter);
+                        }
+                    }
 
                 }else{
                     rowBuilder.append(line);
@@ -360,7 +364,7 @@ public class TimesheetController {
             System.out.println("File not found");
             System.out.println(e);
         }
-        
+
 
         csvWriter.close();
 
