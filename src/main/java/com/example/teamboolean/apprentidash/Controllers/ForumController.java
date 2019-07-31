@@ -9,6 +9,7 @@ import com.example.teamboolean.apprentidash.Repos.DiscussionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +47,7 @@ public class ForumController {
 
     //Single Thread Page
     @GetMapping("/forum/{id}")
-    public String getThread(@PathVariable long id, Model m, Principal p){
+    public String getDiscussion(@PathVariable long id, Model m, Principal p){
         //Sets the necessary variables for the nav bar
         // add ID Get of Thread form ThreadRepository
         m.addAttribute("isLoggedIn",true);
@@ -62,11 +63,11 @@ public class ForumController {
 
     //POST Mapping to create new Discussion
     @PostMapping("/forum")
-    public String createThread(Model m, Principal p, String title, String body) {
+    public String createDiscussion(Model m, Principal p, String title, String body) {
         AppUser author = appUserRepository.findByUsername(p.getName());
         Discussion newDiscussion = new Discussion(author, title, body);
         discussionRepository.save(newDiscussion);
-        return getForum(m,p);
+        return getForum(m, p);
     }
 
     @PostMapping("/forum/{id}")
@@ -77,7 +78,25 @@ public class ForumController {
 
         commentRepository.save(newComment);
 
-        return getThread(id,m,p);
+        return getDiscussion(id, m, p);
+    }
+
+    @DeleteMapping("/forum/{id}/delete")
+    public String deleteDiscussion(@PathVariable long id, Model m, Principal p) {
+
+        AppUser currentUser = appUserRepository.findByUsername(p.getName());
+
+        Discussion currentDiscussion = discussionRepository.findById(id);
+
+        if (currentUser.equals(currentDiscussion.getAuthor())) {
+            List<Comment> deletedComments = commentRepository.findAllByParentDiscussion(currentDiscussion);
+            for (Comment comment : deletedComments) {
+                commentRepository.delete(comment);
+            }
+            discussionRepository.delete(currentDiscussion);
+        }
+
+        return getForum(m, p);
     }
 
 }
