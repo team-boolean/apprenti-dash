@@ -23,6 +23,12 @@ public class AppUser implements UserDetails {
     String lastName;
     String managerName;
 
+    @Column(columnDefinition = "boolean default true")
+    boolean optEmail;
+
+    @Column(columnDefinition = "boolean default true")
+    boolean optText;
+
     @OneToMany (mappedBy = "user")
     List<Day> days;
 
@@ -56,6 +62,18 @@ public class AppUser implements UserDetails {
         this.managerName = managerName;
         this.email = email;
         this.phone = phone;
+    }
+
+    public AppUser(String username, String password, String firstName, String lastName, String managerName, String email, String phone, boolean optEmail, boolean optText) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.managerName = managerName;
+        this.email = email;
+        this.phone = phone;
+        this.optEmail = optEmail;
+        this.optText = optText;
     }
 
     public long getId() {
@@ -136,6 +154,22 @@ public class AppUser implements UserDetails {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public void setOptEmail(boolean optEmail) {
+        this.optEmail = optEmail;
+    }
+
+    public boolean isOptEmail() {
+        return optEmail;
+    }
+
+    public void setOptText(boolean optText) {
+        this.optText = optText;
+    }
+
+    public boolean isOptText() {
+        return optText;
     }
 
     @Override
