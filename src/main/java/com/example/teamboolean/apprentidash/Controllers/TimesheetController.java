@@ -1,5 +1,9 @@
 package com.example.teamboolean.apprentidash.Controllers;
 
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sns.model.MessageAttributeValue;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
 import com.example.teamboolean.apprentidash.Models.AppUser;
 import com.example.teamboolean.apprentidash.Models.Day;
 import com.example.teamboolean.apprentidash.Repos.AppUserRepository;
@@ -68,6 +72,7 @@ public class TimesheetController {
         }else if(buttonRenderHelper(currentUser).equals("lunchOut")) {
             currentUser.getCurrentday().setLunchEnd(now);
         }else if(buttonRenderHelper(currentUser).equals("clockOut")){
+            sendMessage(currentUser.getPhone(),"You are clockOut ");
             currentUser.getCurrentday().setClockOut(now);
         }
 
@@ -376,5 +381,28 @@ public class TimesheetController {
         });
     }
 
+    /******************************** AWS SNS send message ************************************/
+    public void sendMessage(String phoneNumber,String message) {
+        AmazonSNSClient snsClient = new AmazonSNSClient();
+        Map<String, MessageAttributeValue> smsAttributes =
+            new HashMap<String, MessageAttributeValue>();
+    //<set SMS attributes>
+    sendSMSMessage(snsClient, message, phoneNumber, smsAttributes);
+}
+
+    public static void sendSMSMessage(AmazonSNSClient snsClient, String message,
+                                      String phoneNumber, Map<String, MessageAttributeValue> smsAttributes) {
+        PublishResult result = snsClient.publish(new PublishRequest()
+                .withMessage(message)
+                .withPhoneNumber(phoneNumber)
+                .withMessageAttributes(smsAttributes));
+        System.out.println(result); // Prints the message ID.
+    }
+
+
+
 
 }
+
+
+

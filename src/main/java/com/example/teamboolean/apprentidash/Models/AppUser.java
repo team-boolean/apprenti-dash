@@ -38,7 +38,8 @@ public class AppUser implements UserDetails {
 
     public AppUser(){}
 
-    public AppUser(String username, String password, String firstName, String lastName, String managerName, String email) {
+
+    public AppUser(String username, String password, String firstName, String lastName, String managerName, String email){
         this.username = username;
         this.password = password;
         this.firstName = firstName;

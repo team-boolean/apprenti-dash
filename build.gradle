@@ -29,5 +29,7 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.11.595'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk-ses', version: '1.11.595'
 }
 bootJar { archiveFileName = 'application.jar' }
