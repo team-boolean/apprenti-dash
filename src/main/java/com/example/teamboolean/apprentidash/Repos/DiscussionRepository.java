@@ -8,4 +8,5 @@ import java.util.List;
 public interface DiscussionRepository extends CrudRepository<Discussion, Long> {
     Discussion findById(long id);
     List<Discussion> findAllByOrderByCreatedAtDesc();
+    List<Discussion> findAllByBody(String body);
 }
