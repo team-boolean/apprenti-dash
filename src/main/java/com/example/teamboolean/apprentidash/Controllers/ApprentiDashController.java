@@ -164,15 +164,15 @@ public class ApprentiDashController {
         m.addAttribute("currentPage", "settings");
         if (!passwordEncoder.matches(oldpassword, currentUser.getPassword())) {
             m.addAttribute("statusCode", 0);
-            return "settingsUpdated";
+            return getAppUserSettings(m,p);
         } else if (!newpassword.equals(confirmpassword)) {
             m.addAttribute("statusCode", 1);
-            return "settingsUpdated";
+            return getAppUserSettings(m,p);
         } else {
             currentUser.setPassword(passwordEncoder.encode(newpassword));
             appUserRepository.save(currentUser);
             m.addAttribute("statusCode", 2);
-            return "settingsUpdated";
+            return getAppUserSettings(m,p);
         }
     }
 

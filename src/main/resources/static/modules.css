@@ -79,7 +79,7 @@
 }
 
 
-.appUserEdit,.signUpDiv{
+.appUserEdit,.signUpDiv,.alertDiv{
     width:50%;
     margin:5vh auto;
 }
