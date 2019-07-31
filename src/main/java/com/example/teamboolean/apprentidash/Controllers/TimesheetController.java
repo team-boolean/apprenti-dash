@@ -293,8 +293,9 @@ public class TimesheetController {
 
     /***************************** CSV CONTROLLER ***************************/
 
+    // Generates and downloads
     @GetMapping("/timesheet")
-    public void exportCSV(HttpServletResponse response) throws Exception {
+    public void exportCSV(HttpServletResponse response, Principal p) throws Exception {
 
         //set file name and content type
         String filename = "timesheet.csv";
@@ -305,9 +306,6 @@ public class TimesheetController {
 
         //Write to file and download
         PrintWriter csvWriter = response.getWriter();
-
-//        generateHardcodedTemplate(csvWriter);
-
 
         //Queue to hold the days so we can pop them off as we use them
         Queue<Day> dayQueue = new LinkedList<>();
@@ -322,15 +320,35 @@ public class TimesheetController {
         try{
             Scanner template = new Scanner(new File("./src/main/resources/csvTemplates/template.csv"));
 
+            //Track which ^ row we are on so the helper knows which values to add
+            int arrowRowCount = 0;
+
             //Go through the template to look for and replace values
             while(template.hasNext()){
                 StringBuilder rowBuilder = new StringBuilder();
                 String line = template.nextLine();
+
                 //when we find a line with the target symbol(s), break it down and replace them
                 if(line.contains("#")){
+                    //We want to read each character, but replace the character with a full String
                     String[] charsInLine = line.split("");
                     //Replace all the #s with the appropriate day values (Time in, time out, etc)
                     hashtagHelper(rowBuilder, dayQueue, charsInLine);
+
+                }else if(line.contains("^")){
+                    //Replace all the ^s with the appropriate values (Week ending, username, etc)
+                    String[] charsInLine = line.split("");
+                    String currentUsername = appUserRepository.findByUsername(p.getName()).getUsername();
+                    String managerName = appUserRepository.findByUsername(p.getName()).getManagerName();
+
+                    //Get the Saturday at the end of the week for the Timesheet's week ending date
+                    // Trick found via
+                    // https://stackoverflow.com/questions/24177516/get-first-next-monday-after-certain-date
+                    LocalDateTime weekEndingDate = dateRange.get(0).getClockIn()
+                            .with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+
+                    arrowHelper(rowBuilder, charsInLine, currentUsername, managerName, weekEndingDate, arrowRowCount);
+                    arrowRowCount++;
 
                 }else{
                     rowBuilder.append(line);
@@ -418,6 +436,54 @@ public class TimesheetController {
                 rowBuilder.append(letter);
             }
         }
+    }
+
+    //Go through each character in the line, and when we find our arrow, replace it with the correct value
+    private void arrowHelper(StringBuilder rowBuilder, String[] charsInLine, String username, String managerName,
+                             LocalDateTime weekEnding, int rowCount){
+        //Row three has multiple arrows, so we want to track them accordingly
+        int arrowsInThisLineSoFar = 0;
+
+        for(String letter : charsInLine){
+            if(letter.equals("^")){
+
+                if(rowCount == 0){
+                    //first row is the week ending date
+                    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                    String weekEndingString = weekEnding.format(dateFormat);
+                    rowBuilder.append(weekEndingString);
+                }else if(rowCount == 1){
+                    //second row is the username
+                    rowBuilder.append(username);
+                }else if(rowCount == 2){
+                    //Third row is the signatures
+                    if(arrowsInThisLineSoFar == 0){
+                        //First signature is the user
+                        rowBuilder.append(username);
+                    }else if(arrowsInThisLineSoFar == 1 || arrowsInThisLineSoFar == 3){
+                        //second and fourth arrows are today's date
+                        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                        String date = LocalDateTime.now().format(dateFormat);
+                        rowBuilder.append(date);
+                    }else if(arrowsInThisLineSoFar == 2){
+                        //last arrow is the manager's name
+                        rowBuilder.append(managerName);
+                    }
+
+                    arrowsInThisLineSoFar++;
+                }else{
+                    System.out.println("Error tracking the current row");
+                }
+
+
+            }else{
+                rowBuilder.append(letter);
+            }
+
+        }
+
+
+
     }
 
     //helper function to handle the punch in page. It checks which day instance variable hasnt been clicked yet, and returns that to the view to
