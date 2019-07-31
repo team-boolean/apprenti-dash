@@ -14,5 +14,46 @@
     <div th:replace="fragments/navbar :: navbar(${userFirstName}, ${isLoggedIn}, ${currentPage})"></div>
 </header>
 
+<div th:if="${statusmessage == 'Old Password does not match password on record!'}">
+    Old Password does not match password on record!
+</div>
+
+
+<div class="appUserEdit mt">
+    <h3 class="text-center">User Settings</h3>
+    <form th:method="PUT" action="/settings" class="appusersettings-form">
+        <div class="form-group">
+            <label for="firstname">First Name</label><input th:value="${appuser.firstName}" name="firstname" id="firstname" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="lastname">Last Name</label><input th:value="${appuser.lastName}" name="lastname" id="lastname" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label><input th:value="${appuser.email}" type="email" name="email" id="email" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="phone">Mobile Phone Number(Please add 1 before your phone number)</label><input th:value="${appuser.phone}" type="tel" name="phone" id="phone" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="manager">Manager</label><input th:value="${appuser.managerName}" name="manager" id="manager" class="form-control" required/>
+        </div>
+        <button type="submit" class="btn btn-info">Submit</button>
+    </form>
+    <br/>
+    <h3 class="text-center">Reset Password</h3>
+    <form th:method="PUT" action="/resetpassword" class="form-signin">
+        <div class="form-group">
+            <label for="oldpassword">Old Password</label><input type="password" name="oldpassword" id="oldpassword" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="newpassword">New Password</label><input type="password" name="newpassword" id="newpassword" class="form-control" required/>
+        </div>
+        <div class="form-group">
+            <label for="confirmpassword">Confirm New Password</label><input type="password" name="confirmpassword" id="confirmpassword" class="form-control" required/>
+        </div>
+        <button type="submit" class="btn btn-info">Reset Password</button>
+    </form>
+
+</div>
 </body>
 </html>

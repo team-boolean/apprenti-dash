@@ -63,7 +63,9 @@
 }
 
 */
-
+.mt {
+    margin-top: 8vh;
+}
 
 .welcome {
    color: #fafafa;
@@ -77,6 +79,47 @@
 }
 
 
+.appUserEdit{
+    width:50%;
+    margin:10vh auto;
+}
+
+.appUserEdit form{
+    border: 1px solid #ccc !important;
+    padding: 2rem !important;
+    font-family: 'Noto Sans HK', sans-serif;
+    -webkit-box-shadow: 0 8px 6px -6px rgba(255,255,255, 0.5);
+    -moz-box-shadow: 0 8px 6px -6px rgba(255,255,255, 0.5);
+    box-shadow: 0 8px 6px -6px rgba(255,255,255, 0.5);
+}
+
+.form-signin {
+    width: 100%;
+    max-width: 420px;
+    padding: 15px;
+    margin: auto;
+}
+
+.form-label-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.forum-ul {
+    margin-top: 3vh;
+}
+
+.discussion {
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    border: 4px solid #ccc !important;
+    padding-top: 3vh;
+    padding-bottom: 2vh;
+}
+
+.comment-button {
+    margin-top: 3vh;
+}
 ------------
 
 /* Home Page */
@@ -137,9 +180,11 @@
   margin: 15px;
 }
 
+/*
 .main_content form {
   margin: 36px;
 }
+*/
 
 .main_content p {
   margin: 5px;

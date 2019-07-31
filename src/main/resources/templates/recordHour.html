@@ -24,27 +24,27 @@
 
         <form class="clock_in_form" action="/recordHour" method="POST">
 
-            <div class="clockInDiv" th:if="${workStatus == 'clockIn'}">
+            <div class="form-group" th:if="${workStatus == 'clockIn'}">
                 <p>You can clock in when you're ready to start work. </p>
                 <button type="submit" name="name"
                         value="value">Clock In</button>
             </div>
 
-            <div class="lunchInDiv" th:if="${workStatus == 'lunchIn'}">
+            <div class="form-group" th:if="${workStatus == 'lunchIn'}">
                 <p class="clock_status">You are currently clocked in. </p>
                 <p>You can check out for lunch when you're ready to go to lunch. </p>
                 <button  type="submit" name="name"
                          value="value">Lunch In</button>
             </div>
 
-            <div class="lunchOutDiv" th:if="${workStatus == 'lunchOut'}">
+            <div class="form-group" th:if="${workStatus == 'lunchOut'}">
                 <p class="clock_status">You are currently on lunch. </p>
                 <p>You can check back in when you're done with lunch. </p>
                 <button  type="submit" name="name"
                          value="value">Lunch Out</button>
             </div>
 
-            <div class="clockOutDiv" th:if="${workStatus == 'clockOut'}">
+            <div class="form-group" th:if="${workStatus == 'clockOut'}">
                 <p class="clock_status">You are currently clocked in. </p>
                 <p>You can clock out when you're done for the day. </p>
                 <button type="submit" name="name"
@@ -56,7 +56,9 @@
         <div class="doneForTheDay" th:if="${workStatus == 'notNewDay'}">
             <p> You are done for <span th:text="${#temporals.dayOfWeekName(todayDate)}"></span>. See you tomorrow.</p>
             <form class="clock_in_form" th:action="@{/additionalDayRecord}"  method="GET">
-                <button type="submit" name="name" value="value">Start a New Day</button>
+                <div class="form-group">
+                    <button type="submit" name="name" value="value">Start a New Day</button>
+                </div>
             </form>
         </div>
     </div>

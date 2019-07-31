@@ -30,7 +30,9 @@
 
             <input type="hidden" name="dayId" th:value="${currentDay.getId()}">
             <td th:text="${#temporals.dayOfWeekName(currentDay.getClockIn())}"></td>
-            <td th:text="${#temporals.format(currentDay.getClockIn(), 'MM-dd-yyyy')}"></td>
+            <td> <input id="newDate" type="date" name="newDate"
+                        th:value="${#temporals.format(currentDay.getClockIn(), 'yyyy-MM-dd')}"
+                       required></td>
             <td> <input id="clockIn" type="time" name="clockIn" th:value="${#temporals.format(currentDay.getClockIn(),'HH:mm')}" ></td>
             <td> <input id="clockOut" type="time" name="clockOut" th:value="${#temporals.format(currentDay.getClockOut(),'HH:mm')}" ></td>
             <td> <input id="lunchStart" type="time" name="lunchStart" th:value="${#temporals.format(currentDay.getLunchStart(),'HH:mm')}" ></td>
