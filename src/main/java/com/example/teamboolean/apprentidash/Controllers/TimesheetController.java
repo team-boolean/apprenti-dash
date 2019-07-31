@@ -16,9 +16,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.security.Principal;
+import java.text.DecimalFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -218,9 +224,8 @@ public class TimesheetController {
         //Set all the Dates to the date provided in the edit, and update new values
         //(if the user didn't update date, it already defaults to the date's original date)
 
-
         //TODO: Create a helper function for these
-        //code to check if the user make any modifications to the lunch start date field
+        //Checks if the user made any modifications to the lunch start date field
         if(!(lunchStart.equals(""))){
             LocalTime lunchStartLocalTime = LocalTime.parse(lunchStart);
 
@@ -239,7 +244,7 @@ public class TimesheetController {
 
         }
 
-        //code to check if the user make any modifications to the lunch end date field
+        //Checks if the user made any modifications to the lunch end date field
         if(!(lunchEnd.equals(""))){
             LocalTime lunchEndLocalTime = LocalTime.parse(lunchEnd);
 
@@ -248,7 +253,7 @@ public class TimesheetController {
                 currentDay.setLunchEnd(currentDay.getClockIn());
             }
 
-            //overwrite the hours and minutes of the lunch start to match with the modifications the user made
+            //overwrite the hours and minutes of the lunch end to match with the modifications the user made
             //update the date to make sure it is still on the same date as clock in
             currentDay.setLunchEnd(
                     currentDay.getLunchEnd()
@@ -257,7 +262,7 @@ public class TimesheetController {
                             .withDayOfYear(clockInDate.getDayOfYear()));
         }
 
-        //code to check if the user make any modifications to the clock out date field
+        //Checks if the user make any modifications to the clock out date field
         if(!(clockOut.equals(""))) {
             LocalTime clockOutLocalTime = LocalTime.parse(clockOut);
 
@@ -308,8 +313,9 @@ public class TimesheetController {
 
     /***************************** CSV CONTROLLER ***************************/
 
+    // Generates and downloads
     @GetMapping("/timesheet")
-    public void exportCSV(HttpServletResponse response) throws Exception {
+    public void exportCSV(HttpServletResponse response, Principal p) throws Exception {
 
         //set file name and content type
         String filename = "timesheet.csv";
@@ -321,21 +327,215 @@ public class TimesheetController {
         //Write to file and download
         PrintWriter csvWriter = response.getWriter();
 
-        String header = "Day,Date,Time In,Time Out,Lunch,Daily Hours";
-        csvWriter.println(header);
+        //Queue to hold the days so we can pop them off as we use them
+        Queue<Day> dayQueue = new LinkedList<>();
+        dayQueue.addAll(dateRange);
+        System.out.println("dateRange:");
+        System.out.println(dateRange.toString());
+        System.out.println("dayQueue: ");
+        System.out.println(dayQueue.toString());
 
-        for(Day curDay: dateRange){
+        //TODO: replace each ^ with admin values, # with date values, ~ with duplicate day values, and @ with Total
+        //Used this SO for guidance: https://stackoverflow.com/questions/23969007/search-a-column-word-in-csv-file-and-replace-it-by-another-value-java
+        try{
+            Scanner template = new Scanner(new File("./src/main/resources/csvTemplates/AmazonTemplate.csv"));
 
-            csvWriter.println(curDay.toString());
+            //Track which ^ row we are on so the helper knows which values to add
+            int arrowRowCount = 0;
+
+            //Go through the template to look for and replace values.
+            // #, ^, and @ represent the three categories of data
+            // # is data relating to days
+            // ~ is for duplicate days (ie, clocking
+            // ^ is data relating the the user, etc
+            // @ represents totals
+            while(template.hasNext()){
+                StringBuilder rowBuilder = new StringBuilder();
+                String line = template.nextLine();
+
+                //when we find a line with the target symbol(s), break it down and replace them
+                if(line.contains("#")){
+                    //We want to read each character, but replace the character with a full String
+                    String[] charsInLine = line.split("");
+                    //Replace all the #s with the appropriate day values (Time in, time out, etc)
+                    hashtagHelper(rowBuilder, dayQueue, charsInLine);
+
+                }else if(line.contains("~")){
+                    //Replace squiggles with blanks for now
+                    //TODO: If we have a second Day object for a given day, insert it where the squiggles are
+                    String[] charsInLine = line.split("");
+                    for(String letter : charsInLine){
+                        if(letter.equals("~")){
+                            rowBuilder.append(" ");
+                        }else{
+                            rowBuilder.append(letter);
+                        }
+                    }
+
+                }else if(line.contains("^")){
+                    //Replace all the ^s with the appropriate values (Week ending, username, etc)
+                    String[] charsInLine = line.split("");
+                    String currentUsername = appUserRepository.findByUsername(p.getName()).getUsername();
+                    String managerName = appUserRepository.findByUsername(p.getName()).getManagerName();
+
+                    //Get the Saturday at the end of the week for the Timesheet's week ending date
+                    // Trick found via
+                    // https://stackoverflow.com/questions/24177516/get-first-next-monday-after-certain-date
+                    LocalDateTime weekEndingDate = dateRange.get(0).getClockIn()
+                            .with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+
+                    arrowHelper(rowBuilder, charsInLine, currentUsername, managerName, weekEndingDate, arrowRowCount);
+                    arrowRowCount++;
+
+                }else if(line.contains("@")){
+                    //Replace all the @s with the week's total hours
+                    String[] charsInLine = line.split("");
+                    for(String letter : charsInLine){
+                        if(letter.equals("@")){
+                            DecimalFormat df = new DecimalFormat("#.##");
+                            rowBuilder.append(df.format(totalHours));
+                        }else{
+                            rowBuilder.append(letter);
+                        }
+                    }
+
+
+                }
+                else{
+                    rowBuilder.append(line);
+                }
+                csvWriter.println(rowBuilder);
+            }
+
+            //print that line to the csv writer
+
+        }catch(FileNotFoundException e) {
+            System.out.println("File not found");
+            System.out.println(e);
         }
 
-        csvWriter.println(",,,,Total Hours:," + totalHours);
+
         csvWriter.close();
 
     }
 
 
-    /******************************** All the helper function ************************************/
+    /******************************** All the helper functions ************************************/
+
+    //Replaces #'s with appropriate values when building new csv from template
+    private void hashtagHelper(StringBuilder rowBuilder, Queue<Day> dayQueue, String[] charsInLine){
+        //Since we want a different type of value for each hashtag, we need a different value based on if
+        // its the first, second or third occurance
+
+        int hashtagCount = 0;
+        Day dayToInsert = null;
+        try{
+            dayToInsert = dayQueue.remove();
+        }catch(NoSuchElementException e){
+            System.out.println("Day Queue is empty");
+            System.out.println(e);
+        }
+
+        for (String letter : charsInLine){
+            if(letter.equals("#")){
+
+                if(hashtagCount == 0 && dayToInsert != null){
+                    //First # should be clock in
+                    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+                    String timeIn = dayToInsert.getClockIn().format(timeFormat);
+                    rowBuilder.append(timeIn);
+                    hashtagCount++;
+                }else if(hashtagCount == 1){
+                    //Secong # should be clock out. Only append if it is not null
+                    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+                    if(dayToInsert.getClockOut() != null){
+                        String timeOut = dayToInsert.getClockOut().format(timeFormat);
+                        rowBuilder.append(timeOut);
+                    }else{
+                        rowBuilder.append(" ");
+                    }
+                    hashtagCount++;
+
+                }else if(hashtagCount == 2){
+                    //Third # should be Lunch length
+                    Double lunch = dayToInsert.calculateLunch();
+                    //Decimal format courtesy of SO:
+                    // https://stackoverflow.com/questions/8137218/trim-double-to-2-decimal-places
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    rowBuilder.append(df.format(lunch));
+                    hashtagCount++;
+                }else if(hashtagCount == 3){
+                    //Fourth # should be Daily hours
+                    //Decimal format courtesy of SO:
+                    // https://stackoverflow.com/questions/8137218/trim-double-to-2-decimal-places
+                    double dailyHours = dayToInsert.calculateDailyHours();
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    rowBuilder.append(df.format(dailyHours));
+                    hashtagCount++;
+                }else if(hashtagCount == 4){
+                    //Fifth # should be the date
+                    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                    String date = dayToInsert.getClockIn().format(dateFormat);
+                    rowBuilder.append(date);
+                    hashtagCount++;
+                }else{
+
+                    //replace # with " " if none of the above applies
+                    rowBuilder.append(" ");
+                }
+            }else{
+                rowBuilder.append(letter);
+            }
+        }
+    }
+
+    //Go through each character in the line, and when we find our arrow, replace it with the correct value
+    private void arrowHelper(StringBuilder rowBuilder, String[] charsInLine, String username, String managerName,
+                             LocalDateTime weekEnding, int rowCount){
+        //Row three has multiple arrows, so we want to track them accordingly
+        int arrowsInThisLineSoFar = 0;
+
+        for(String letter : charsInLine){
+            if(letter.equals("^")){
+
+                if(rowCount == 0){
+                    //first row is the week ending date
+                    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                    String weekEndingString = weekEnding.format(dateFormat);
+                    rowBuilder.append(weekEndingString);
+                }else if(rowCount == 1){
+                    //second row is the username
+                    rowBuilder.append(username);
+                }else if(rowCount == 2){
+                    //Third row is the signatures
+                    if(arrowsInThisLineSoFar == 0){
+                        //First signature is the user
+                        rowBuilder.append(username);
+                    }else if(arrowsInThisLineSoFar == 1 || arrowsInThisLineSoFar == 3){
+                        //second and fourth arrows are today's date
+                        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                        String date = LocalDateTime.now().format(dateFormat);
+                        rowBuilder.append(date);
+                    }else if(arrowsInThisLineSoFar == 2){
+                        //last arrow is the manager's name
+                        rowBuilder.append(managerName);
+                    }
+
+                    arrowsInThisLineSoFar++;
+                }else{
+                    System.out.println("Error tracking the current row");
+                }
+
+
+            }else{
+                rowBuilder.append(letter);
+            }
+
+        }
+
+
+
+    }
 
     //helper function to handle the punch in page. It checks which day instance variable hasnt been clicked yet, and returns that to the view to
     // display a button for it
