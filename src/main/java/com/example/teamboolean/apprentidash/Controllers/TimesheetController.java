@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.security.Principal;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -291,11 +294,69 @@ public class TimesheetController {
         //Write to file and download
         PrintWriter csvWriter = response.getWriter();
 
-        generateHardcodedTemplate(csvWriter);
+//        generateHardcodedTemplate(csvWriter);
 
 
+        //Queue to hold the days so we can pop them off as we use them
+        Queue<Day> dayQueue = new LinkedList<>(dateRange);
 
         //TODO: replace each ^ with admin values, # with date values, ~ with duplicate day values, and @ with Total
+        //Used this SO for guidance: https://stackoverflow.com/questions/23969007/search-a-column-word-in-csv-file-and-replace-it-by-another-value-java
+        try{
+            Scanner template = new Scanner(new File("../../../../resources/csvTemplates/template.csv"));
+
+            //Go through the template to look for and replace values
+            while(template.hasNext()){
+                StringBuilder rowBuilder = new StringBuilder();
+                String line = template.nextLine();
+                //when we find a line with the target symbol(s), break it down and replace them
+                if(line.contains("#")){
+                    //Since we want a different type of value for each hashtag, we need a different value based on if
+                    // its the first, second or third occurance
+                    String[] charsInLine = line.split("");
+                    int hashtagCount = 0;
+
+                    for (String letter : charsInLine){
+                        if(letter.equals("#")){
+                            Day dayToInsert = dayQueue.remove();
+
+                            if(hashtagCount == 0){
+                                //First # should be clock in
+                                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+                                String timeIn = dayToInsert.getClockIn().format(timeFormat);
+                            }else if(hashtagCount == 1){
+                                //TODO: second hashtag should be time out
+
+                                //append "" for now
+                                rowBuilder.append("");
+                            }else{
+                                //Fifth # should be replaced with date
+//                                DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("EEEE");
+//                                String day = dayToInsert.getClockIn().format(dayFormat);
+//                                rowBuilder.append(day);
+
+                                //append "" for now
+                                rowBuilder.append("");
+                            }
+                        }else{
+                            rowBuilder.append(letter);
+                        }
+                    }
+
+                }else{
+                    rowBuilder.append(line);
+                }
+                csvWriter.println(rowBuilder);
+            }
+
+            //print that line to the csv writer
+
+        }catch(FileNotFoundException e) {
+            System.out.println("File not found");
+            System.out.println(e);
+        }
+
+
         for(Day curDay: dateRange){
 
             csvWriter.println(curDay.toExcelString());
@@ -329,7 +390,7 @@ public class TimesheetController {
         thirdLine.append("Employee Username: ,,^");
         csvWriter.println(thirdLine);
 
-        //Insert a plant row
+        //Insert a blank row
         csvWriter.println("");
 
         StringBuilder fourthLine = new StringBuilder();
@@ -342,6 +403,7 @@ public class TimesheetController {
         fifthLine.append("Sun.,#,#,,#,");
         addCommas(4,fifthLine);
         fifthLine.append("#");
+        csvWriter.println(fifthLine);
 
 
         return csvWriter;
