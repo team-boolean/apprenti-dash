@@ -54,7 +54,6 @@ public class ForumController {
         m.addAttribute("currentPage", "discussion");
 
         Discussion discussion = discussionRepository.findById(id);
-        Iterable<Comment> allComments = discussion.getComments();
 
         m.addAttribute("discussion", discussion);
 
