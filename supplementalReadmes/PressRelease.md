@@ -49,4 +49,4 @@ And that's it! The website will automatically redirect you to the Clock In page 
  If you would like to start your own Apprentice Dashboard timesheet, visit our 
  [website](http://apprenti.us-west-2.elasticbeanstalk.com/) today.
  
- If you have any questions, feel free to visit our [FAQ page](./FAQs.md). 
+ If you have any questions, feel free to visit our [FAQ page](FAQs.md). 
