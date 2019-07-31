@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +26,7 @@ import java.util.*;
 @Controller
 public class TimesheetController {
     //US Zone ID
-    private final static ZoneId USZONE = ZoneId.of("America/Los_Angeles");
+    private static ZoneId TIMEZONE;
     //first Day of the week
     private DayOfWeek firstDay;
     //Day list based from date range
@@ -42,15 +40,34 @@ public class TimesheetController {
     @Autowired
     DayRepository dayRepository;
 
+    @RequestMapping("/tz")
+    @ResponseBody
+    public String testHandler (Locale clientLocale, ZoneId clientZoneId) {
+
+        ZoneOffset serverZoneOffset = ZoneOffset.ofTotalSeconds(
+                TimeZone.getDefault().getRawOffset() / 1000);
+
+        return String.format("client timeZone: %s" +
+                        "<br/> " +
+                        "server timeZone: %s" +
+                        "<br/>" +
+                        " locale: %s%n",
+                clientZoneId.normalized().getId(),
+                serverZoneOffset.getId(),
+                clientLocale);
+    }
+
+
     /********************************* The controller methods to handle our Punch In page **************************************************************/
   //route to handle when a user first comes to the punch in page
     @GetMapping("/recordHour")
-    public String recordHour(Model m, Principal p){
+    public String recordHour(ZoneId clientZoneId, Model m, Principal p){
+        TIMEZONE = clientZoneId;
         //Sets the necessary variables for the nav bar
         loggedInStatusHelper(m, p);
         m.addAttribute("currentPage", "clock_in");
         //Sets status for knowing which button to show
-        LocalDateTime now = LocalDateTime.now(USZONE);
+        LocalDateTime now = LocalDateTime.now(TIMEZONE);
         AppUser currentUser = appUserRepository.findByUsername(p.getName());
         m.addAttribute("workStatus", buttonRenderHelper(currentUser));
         m.addAttribute("todayDate", now);
@@ -59,10 +76,11 @@ public class TimesheetController {
 
     //Route to handle our clock in button
     @PostMapping(value="/recordHour", params="name=value")
-    public String clockInSave(Principal p, Model m) {
+    public String clockInSave(ZoneId clientZoneId, Principal p, Model m) {
+        TIMEZONE = clientZoneId;
 
         AppUser currentUser = appUserRepository.findByUsername(p.getName());
-        LocalDateTime now = LocalDateTime.now(USZONE);
+        LocalDateTime now = LocalDateTime.now(TIMEZONE);
 
         //check what day instance variable needs to be updated based on the sequence of clockin-lunchin-lunchout-clockout
         if(buttonRenderHelper(currentUser).equals("clockIn")) {
@@ -98,7 +116,9 @@ public class TimesheetController {
 
 /******************************** Summary Route ******************************************************************************/
     @GetMapping("/summary")
-    public String getSummary(Principal p, Model m, String fromDate, String toDate){
+    public String getSummary(ZoneId clientZoneId, Principal p, Model m, String fromDate, String toDate){
+        TIMEZONE = clientZoneId;
+
         //Sets the necessary variables for the nav bar
         loggedInStatusHelper(m, p);
         m.addAttribute("currentPage", "summary");
@@ -116,9 +136,9 @@ public class TimesheetController {
         dateRange = new ArrayList<>();
 
         //Get first day of the current week
-        LocalDate from = getFirstDay();
+        LocalDate from = getFirstDay(clientZoneId);
         //Get last day of current week
-        LocalDate to = getLastDay();
+        LocalDate to = getLastDay(clientZoneId);
 
         //Check if input dates are not null, if not convert into local date
         if (fromDate != null){
@@ -360,16 +380,20 @@ public class TimesheetController {
 
     //Helper function to get the first day
     //Reference: https://stackoverflow.com/questions/22890644/get-current-week-start-and-end-date-in-java-monday-to-sunday
-    private LocalDate getFirstDay(){
+    private LocalDate getFirstDay(ZoneId clientZoneId){
+        TIMEZONE = clientZoneId;
+
         firstDay = WeekFields.of(Locale.US).getFirstDayOfWeek();
-        return LocalDate.now(USZONE).with(TemporalAdjusters.previousOrSame(firstDay));
+        return LocalDate.now(TIMEZONE).with(TemporalAdjusters.previousOrSame(firstDay));
     }
 
     //Helper function to get the last day
     //Reference: https://stackoverflow.com/questions/22890644/get-current-week-start-and-end-date-in-java-monday-to-sunday
-    private LocalDate getLastDay(){
+    private LocalDate getLastDay(ZoneId clientZoneId){
+        TIMEZONE = clientZoneId;
+
         DayOfWeek lastDay = DayOfWeek.of(((firstDay.getValue() + 5) % DayOfWeek.values().length) + 1);
-        return LocalDate.now(USZONE).with(TemporalAdjusters.nextOrSame(lastDay));
+        return LocalDate.now(TIMEZONE).with(TemporalAdjusters.nextOrSame(lastDay));
 
     }
 
