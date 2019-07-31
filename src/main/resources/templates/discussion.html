@@ -15,19 +15,19 @@
     </header>
     <main>
 
-        <div class="card">
+        <div class="card discussion bg-light shadow">
             <h1 th:text="${discussion.title}"></h1>
-            <span th:text="${discussion.author.username}"></span>
             <p th:text="${discussion.body}"></p>
+            <p th:text="${discussion.author.username}"></p>
         </div>
-        <ul th:each="comment : ${discussion.comments}">
-            <li>
+        <ul class="list-group list-group-flush" th:each="comment : ${discussion.comments}">
+            <li class="list-group-item">
                 <div th:replace="fragments/comment :: .comment">...</div>
             </li>
         </ul>
 
                 <!-------------- ADD COMMENT---------------->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Comment</button>
+        <button type="button" class="btn btn-primary comment-button" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Comment</button>
 
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
