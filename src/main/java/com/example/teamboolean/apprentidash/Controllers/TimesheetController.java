@@ -318,12 +318,17 @@ public class TimesheetController {
         //TODO: replace each ^ with admin values, # with date values, ~ with duplicate day values, and @ with Total
         //Used this SO for guidance: https://stackoverflow.com/questions/23969007/search-a-column-word-in-csv-file-and-replace-it-by-another-value-java
         try{
-            Scanner template = new Scanner(new File("./src/main/resources/csvTemplates/template.csv"));
+            Scanner template = new Scanner(new File("./src/main/resources/csvTemplates/AmazonTemplate.csv"));
 
             //Track which ^ row we are on so the helper knows which values to add
             int arrowRowCount = 0;
 
-            //Go through the template to look for and replace values
+            //Go through the template to look for and replace values.
+            // #, ^, and @ represent the three categories of data
+            // # is data relating to days
+            // ~ is for duplicate days (ie, clocking
+            // ^ is data relating the the user, etc
+            // @ represents totals
             while(template.hasNext()){
                 StringBuilder rowBuilder = new StringBuilder();
                 String line = template.nextLine();
@@ -334,6 +339,18 @@ public class TimesheetController {
                     String[] charsInLine = line.split("");
                     //Replace all the #s with the appropriate day values (Time in, time out, etc)
                     hashtagHelper(rowBuilder, dayQueue, charsInLine);
+
+                }else if(line.contains("~")){
+                    //Replace squiggles with blanks for now
+                    //TODO: If we have a second Day object for a given day, insert it where the squiggles are
+                    String[] charsInLine = line.split("");
+                    for(String letter : charsInLine){
+                        if(letter.equals("~")){
+                            rowBuilder.append(" ");
+                        }else{
+                            rowBuilder.append(letter);
+                        }
+                    }
 
                 }else if(line.contains("^")){
                     //Replace all the ^s with the appropriate values (Week ending, username, etc)
@@ -350,7 +367,21 @@ public class TimesheetController {
                     arrowHelper(rowBuilder, charsInLine, currentUsername, managerName, weekEndingDate, arrowRowCount);
                     arrowRowCount++;
 
-                }else{
+                }else if(line.contains("@")){
+                    //Replace all the @s with the week's total hours
+                    String[] charsInLine = line.split("");
+                    for(String letter : charsInLine){
+                        if(letter.equals("@")){
+                            DecimalFormat df = new DecimalFormat("#.##");
+                            rowBuilder.append(df.format(totalHours));
+                        }else{
+                            rowBuilder.append(letter);
+                        }
+                    }
+
+
+                }
+                else{
                     rowBuilder.append(line);
                 }
                 csvWriter.println(rowBuilder);
