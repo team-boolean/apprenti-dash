@@ -1,5 +1,7 @@
 
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="comment(isLoggedIn, currentPage)" class="comment">
 
+<div th:fragment="comment" class="comment card-body">
+    <span th:text="${comment.author.username}"></span> says:
+    <p th:text="${comment.body}"></p>
 </div>
