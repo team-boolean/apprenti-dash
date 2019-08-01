@@ -1,6 +1,7 @@
 package com.example.teamboolean.apprentidash;
 
 import com.example.teamboolean.apprentidash.Models.Discussion;
+import com.example.teamboolean.apprentidash.Repos.CommentRepository;
 import com.example.teamboolean.apprentidash.Repos.DiscussionRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +80,9 @@ public class ControllerTests {
     @Autowired
     DiscussionRepository discussionRepository;
 
+    @Autowired
+    CommentRepository commentRepository;
+
     @WithMockUser
     @Test
     public void testDiscussionCreateReadDelete() throws Exception {
@@ -104,13 +108,25 @@ public class ControllerTests {
                 "test discussion post");
         System.out.println(createdDiscussion.getTitle());
 
-        // After deleting the discussion, findById should return null.
+        // Next, let's try adding a comment to the test discussion.
         long createdDiscussionId = createdDiscussion.getId();
+
+
+        mockMvc.perform(
+                post("/forum/" + createdDiscussionId)
+                    .with(testUser())
+                    .param("body", "this is a new comment!!!!"))
+                .andDo(print())
+                .andExpect(content().string(containsString("this is a new comment!!!!")));
+
+
+        // After deleting the discussion, findById should return null.
 
         mockMvc.perform(
                 delete("/forum/" + createdDiscussionId + "/delete")
                 .with(testUser()));
 
-        assertNull(discussionRepository.findById(createdDiscussionId));
+        assertNull("trying to find the deleted discussion should return null.", discussionRepository.findById(createdDiscussionId));
+        assertEquals("the children comments in the deleted discussion should also have been deleted, so the returned list should have a size of 0.", 0, commentRepository.findAllByParentDiscussion(createdDiscussion).size());
     }
 }
